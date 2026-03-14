@@ -1,0 +1,108 @@
+<div class="contact-header">
+  <h3 class="Contact-Text">{{ 'CONTACT_SUB' | translate }}</h3>
+  <h1 class="Contact-Text2">{{ 'CONTACT_TITLE' | translate }}</h1>
+</div>
+
+<div class="contact-wrapper">
+  <div class="store-info-grid">
+
+    <div class="store-col">
+      <h3>{{ 'STORE_01' | translate }}</h3>
+      <div class="info-block">
+        <span class="label">{{ 'ADDRESS' | translate }}</span>
+        <p>ana politkovskaias 33<br>sjiqia</p>
+      </div>
+      <div class="info-block">
+        <span class="label">{{ 'TEL' | translate }}</span>
+        <p>597 04 00 33</p>
+      </div>
+      <div class="info-block">
+        <span class="label">{{ 'EMAIL' | translate }}</span>
+        <p>Giusha112&#64;Gmail.com</p>
+      </div>
+    </div>
+
+    <div class="store-col">
+      <h3>{{ 'STORE_02' | translate }}</h3>
+      <div class="info-block">
+        <span class="label">{{ 'ADDRESS' | translate }}</span>
+        <p>guramishvilis 22<br>sacxa</p>
+      </div>
+      <div class="info-block">
+        <span class="label">{{ 'TEL' | translate }}</span>
+        <p>597 04 44 33</p>
+      </div>
+      <div class="info-block">
+        <span class="label">{{ 'EMAIL' | translate }}</span>
+        <p>Giusha112&#64;Gmail.com</p>
+      </div>
+    </div>
+
+    <div class="store-col">
+      <h3>{{ 'CUSTOMER_SERVICE' | translate }}</h3>
+      <div class="info-block">
+        <span class="label">{{ 'TEL' | translate }}</span>
+        <p>332 442 333 </p>
+      </div>
+      <div class="info-block">
+        <span class="label">{{ 'EMAIL' | translate }}</span>
+        <p>Giusha&#64;Gmail.com</p>
+      </div>
+      <div class="social-icons">
+        <a href="#">f</a>
+        <a>𝕏</a>
+        <a>&#9679;</a>
+        <a>𝑷</a>
+      </div>
+    </div>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #contactForm="ngForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label>{{ 'FIRST_NAME' | translate }}</label>
+        <input
+          type="text"
+          name="firstName"
+          [(ngModel)]="formData.firstName"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label>{{ 'LAST_NAME' | translate }}</label>
+        <input
+          type="text"
+          name="lastName"
+          [(ngModel)]="formData.lastName"
+        />
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label>{{ 'EMAIL' | translate }}</label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="formData.email"
+        required
+      />
+    </div>
+
+    <div class="form-group full-width">
+      <label>{{ 'MESSAGE_PLACEHOLDER' | translate }}</label>
+      <textarea
+        name="message"
+        [(ngModel)]="formData.message"
+        rows="4"
+      ></textarea>
+    </div>
+
+    <div class="form-footer">
+      <p *ngIf="successMsg" class="success-msg">{{ successMsg | translate }}</p>
+      <p *ngIf="errorMsg" class="error-msg">{{ errorMsg | translate }}</p>
+      <button type="submit" [disabled]="loading">
+        {{ (loading ? 'SENDING' : 'SUBMIT') | translate }}
+      </button>
+    </div>
+  </form>
+</div>

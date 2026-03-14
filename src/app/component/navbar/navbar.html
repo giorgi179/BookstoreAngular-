@@ -1,0 +1,110 @@
+<nav class="Navbar inline">
+  <div class="inline content-3 space-between">
+
+    <!-- LOGO -->
+    <a class="Logo block-center-center" (click)="goToHome()">
+      <div class="logo-box">
+        <span class="logo-bink">BINK.</span>
+        <span class="logo-divider"></span>
+        <span class="logo-publishers">PUBLISHERS</span>
+      </div>
+    </a>
+
+    <!-- MENU -->
+    <div class="Menu inline-center-center" [class.open]="menuOpen">
+      <button class="close-menu" (click)="closeMenu()">✕</button>
+
+      <div class="NavItem block-center-center">
+        <a class="NavLink block-center-center" (click)="goBooksStore(); closeMenu()">
+          <span class="NavLinkTitle">{{ 'NAV_BOOKSTORE' | translate }}</span>
+          <span class="NavIcon"><i class="ri-book-line"></i></span>
+        </a>
+      </div>
+
+      <div class="NavItem block-center-center">
+        <a class="NavLink block-center-center" (click)="goToStory(); closeMenu()">
+          <span class="NavLinkTitle">{{ 'NAV_ABOUT' | translate }}</span>
+          <span class="NavIcon"><i class="ri-information-line"></i></span>
+        </a>
+      </div>
+
+      <div class="NavItem block-center-center" (click)="goToEvents(); closeMenu()">
+        <a class="NavLink block-center-center" href="" (click)="$event.preventDefault()">
+          <span class="NavLinkTitle">{{ 'NAV_EVENTS' | translate }}</span>
+          <span class="NavIcon"><i class="ri-quill-pen-line"></i></span>
+        </a>
+      </div>
+
+
+      <div class="NavItem block-center-center">
+        <a class="NavLink block-center-center" [routerLink]="['/contact']" (click)="closeMenu()">
+          <span class="NavLinkTitle">{{ 'NAV_CONTACT' | translate }}</span>
+          <span class="NavIcon"><i class="ri-information-line"></i></span>
+        </a>
+      </div>
+
+      <!-- მობილური ენის გადამრთველი -->
+      <div class="lang-switcher-mobile">
+        <p class="lang-mobile-title">{{ 'NAV_LANGUAGE' | translate }}</p>
+        <div class="lang-mobile-grid">
+          <button *ngFor="let lang of languages" (click)="switchLang(lang.code); closeMenu()"
+            [class.active]="currentLang === lang.code" class="lang-mobile-btn">
+            {{ lang.flag }} {{ lang.label }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- overlay -->
+    <div class="menu-overlay" [class.open]="menuOpen" (click)="closeMenu()"></div>
+
+    <!-- RIGHT SIDE -->
+    <div class="inline-center-center gap-3">
+
+      <!-- ენის გადამრთველი desktop -->
+      <div class="lang-switcher">
+        <button class="lang-current" (click)="langMenuOpen = !langMenuOpen">
+          <span class="lang-flag">{{ getLangLabel(currentLang) }}</span>
+          <i class="ri-global-line lang-globe"></i>
+          <i class="ri-arrow-down-s-line lang-arrow" [class.rotated]="langMenuOpen"></i>
+        </button>
+        <div class="lang-dropdown" [class.open]="langMenuOpen">
+          <button *ngFor="let lang of languages" (click)="switchLang(lang.code); langMenuOpen = false"
+            [class.active]="currentLang === lang.code" class="lang-option">
+            <span>{{ lang.flag }}</span>
+            <span>{{ lang.label }}</span>
+            <i class="ri-check-line lang-check" *ngIf="currentLang === lang.code"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- GUEST -->
+      <ng-container *ngIf="!isLoggedIn">
+        <button class="ButtonLink" (click)="goToAuth()">{{ 'SIGN_IN' | translate }}</button>
+      </ng-container>
+
+      <!-- LOGGED IN -->
+      <ng-container *ngIf="isLoggedIn">
+        <div class="basket-icon" (click)="navigate('/basket')">
+          <i class="ri-shopping-basket-line"></i>
+          <span class="basket-count" *ngIf="basketCount > 0">{{ basketCount }}</span>
+        </div>
+
+        <div class="NavItem block-center-center">
+          <div class="profile-circle NavLink block-center-center" (click)="navigate('/profile')">
+            <i class="ri-user-line"></i>
+            <span class="NavLinkTitle">{{ 'NAV_ACCOUNT' | translate }}</span>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- HAMBURGER -->
+      <button class="hamburger" (click)="openMenu()">
+        <i class="ri-menu-line"></i>
+      </button>
+
+    </div>
+
+  </div>
+</nav>

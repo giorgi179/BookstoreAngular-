@@ -1,0 +1,100 @@
+<div class="basket-page">
+  <div class="basket-header">
+    <h1 class="basket-title">{{ 'YOUR_BASKET' | translate }}</h1>
+    <button class="clear-btn" (click)="clearAll()" *ngIf="allItems.length > 0">
+      {{ 'CLEAR_ALL' | translate }}
+    </button>
+  </div>
+
+  <p class="success-msg" *ngIf="successMessage">{{ successMessage }}</p>
+  <p class="error-msg"   *ngIf="errorMessage">{{ errorMessage }}</p>
+
+  <div class="basket-loading" *ngIf="isLoading">{{ 'LOADING' | translate }}</div>
+
+  <div class="basket-empty" *ngIf="!isLoading && allItems.length === 0">
+    <p>{{ 'BASKET_EMPTY' | translate }}</p>
+    <button class="shop-btn" routerLink="/">{{ 'CONTINUE_SHOPPING' | translate }}</button>
+  </div>
+
+  <div class="basket-content" *ngIf="!isLoading && allItems.length > 0">
+    <div class="basket-items">
+      <div class="basket-item" *ngFor="let item of allItems">
+        <img
+          [src]="item.book?.bookUrl || 'https://via.placeholder.com/80x120'"
+          [alt]="item.book?.title"
+          class="item-img"
+        />
+        <div class="item-info">
+          <h3 class="item-title">{{ item.book?.title }}</h3>
+          <p class="item-author">{{ item.book?.bookDetails?.author }}</p>
+          <p class="item-price">₾{{ item.price }}</p>
+        </div>
+        <div class="item-controls">
+          <button class="qty-btn" (click)="decreaseQuantity(item)">−</button>
+          <span class="qty-num">{{ item.quantity }}</span>
+          <button class="qty-btn" (click)="increaseQuantity(item)">+</button>
+        </div>
+        <p class="item-total">₾{{ (item.price * item.quantity).toFixed(2) }}</p>
+        <button class="remove-btn" (click)="removeItem(item)">✕</button>
+      </div>
+    </div>
+
+    <div class="basket-summary">
+      <h2 class="summary-title">{{ 'ORDER_SUMMARY' | translate }}</h2>
+      <div class="summary-row">
+        <span>{{ 'ITEMS' | translate }} ({{ allItems.length }})</span>
+        <span>₾{{ totalPrice.toFixed(2) }}</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row total">
+        <span>{{ 'TOTAL' | translate }}</span>
+        <span>₾{{ totalPrice.toFixed(2) }}</span>
+      </div>
+      <button class="buy-btn" (click)="onBuyNow()">{{ 'BUY_NOW' | translate }}</button>
+      <button class="continue-btn" routerLink="/">{{ 'CONTINUE_SHOPPING' | translate }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Card Picker Modal ─────────────────────── -->
+<div class="card-picker-overlay" *ngIf="showCardPicker" (click)="closeCardPicker()">
+  <div class="card-picker-modal" (click)="$event.stopPropagation()">
+
+    <div class="card-picker-header">
+      <h3>Select Payment Card</h3>
+      <button class="card-picker-close" (click)="closeCardPicker()">✕</button>
+    </div>
+
+    <div class="card-picker-list">
+      <div
+        class="card-picker-item"
+        *ngFor="let card of savedCards"
+        (click)="selectCardAndBuy(card)"
+      >
+        <div class="card-picker-visual">
+          <div class="card-picker-top">
+            <span class="card-picker-bank">BINK. Bank</span>
+            <i class="ri-bank-card-line"></i>
+          </div>
+          <div class="card-picker-number">{{ card.masked }}</div>
+          <div class="card-picker-bottom">
+            <div>
+              <span class="card-picker-lbl">Holder</span>
+              <span class="card-picker-val">{{ card.holder || '—' }}</span>
+            </div>
+            <div>
+              <span class="card-picker-lbl">Expires</span>
+              <span class="card-picker-val">{{ card.expiry || '—' }}</span>
+            </div>
+            <div class="card-picker-brand">
+              <i class="ri-visa-line" *ngIf="card.brand === 'visa'"></i>
+              <span class="mc"        *ngIf="card.brand === 'mastercard'">MC</span>
+            </div>
+          </div>
+        </div>
+        <div class="card-picker-select">Pay with this card →</div>
+      </div>
+    </div>
+
+  </div>
+</div>

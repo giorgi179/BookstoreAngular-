@@ -1,0 +1,266 @@
+<div class="profile-page">
+
+  <!-- Back -->
+  <button class="back-btn" (click)="goBack()">← Back</button>
+
+  <!-- Avatar Section -->
+  <div class="avatar-section">
+    <div class="avatar-wrap">
+      <img
+        [src]="currentPhoto || getDefaultAvatar()"
+        alt="Profile"
+        class="avatar-img"
+        (error)="onImgError($event)"
+        (click)="openPhotoModal()"
+      />
+      <label class="avatar-edit" for="photoInput">
+        <i class="ri-camera-line"></i>
+      </label>
+      <input id="photoInput" type="file" accept="image/*"
+             (change)="onFileSelected($event)" style="display:none"/>
+    </div>
+    <div class="avatar-info">
+      <h2 class="user-name">{{ userName || 'User' }}</h2>
+      <p class="user-email">{{ userEmail }}</p>
+      <span class="badge-verified"   *ngIf="isVerified">✓ Verified</span>
+      <span class="badge-unverified" *ngIf="!isVerified">Unverified</span>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="msg success" *ngIf="successMsg">{{ successMsg }}</div>
+  <div class="msg error"   *ngIf="errorMsg">{{ errorMsg }}</div>
+  <div class="msg loading" *ngIf="isLoading">Processing...</div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button [class.active]="activeTab==='info'"    (click)="setTab('info')">👤 Profile</button>
+    <button [class.active]="activeTab==='card'"    (click)="setTab('card')">💳 My Cards</button>
+    <button [class.active]="activeTab==='history'" (click)="setTab('history')">🧾 Orders</button>
+  </div>
+
+  <!-- ── INFO TAB ───────────────────────────── -->
+  <div class="tab-content" *ngIf="activeTab==='info'">
+    <div class="info-card">
+      <div *ngIf="!editMode">
+        <div class="info-row">
+          <span class="info-label">Full Name</span>
+          <span class="info-value">{{ userName || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ userEmail }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Phone</span>
+          <span class="info-value">{{ userPhone || '—' }}</span>
+        </div>
+        <div class="info-actions">
+          <button class="btn-primary"   (click)="startEdit()">Edit Profile</button>
+          <button class="btn-secondary" (click)="goToChangePassword()">Change Password</button>
+          <button class="btn-danger"    (click)="logout()">Sign Out</button>
+        </div>
+      </div>
+
+      <div *ngIf="editMode" class="edit-form">
+        <h3>Edit Profile</h3>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input [(ngModel)]="editName" placeholder="Your full name" />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input [(ngModel)]="editPhone" placeholder="+995 5XX XXX XXX" />
+        </div>
+        <div class="form-actions">
+          <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
+          <button class="btn-primary"   (click)="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD TAB ───────────────────────────── -->
+  <div class="tab-content" *ngIf="activeTab==='card'">
+
+    <!-- ── Card list ── -->
+    <ng-container *ngIf="!showCardForm">
+
+      <div class="cards-list" *ngIf="allCards.length > 0">
+        <div class="card-item" *ngFor="let card of allCards">
+
+          <div class="card-visual">
+            <div class="card-visual__top">
+              <span class="bank-name">BINK. Bank</span>
+              <span class="badge-primary" *ngIf="card.primary">Primary</span>
+              <i class="ri-bank-card-line"></i>
+            </div>
+            <div class="card-visual__number">{{ card.masked }}</div>
+            <div class="card-visual__bottom">
+              <div>
+                <span class="card-lbl">Card Holder</span>
+                <span class="card-val">{{ card.holder || '—' }}</span>
+              </div>
+              <div>
+                <span class="card-lbl">Expires</span>
+                <span class="card-val">{{ card.expiry || '—' }}</span>
+              </div>
+              <div class="card-brand">
+                <i class="ri-visa-line" *ngIf="card.brand === 'visa'"></i>
+                <span class="mc"        *ngIf="card.brand === 'mastercard'">MC</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-address" *ngIf="card.address">
+            <i class="ri-map-pin-line"></i> {{ card.address }}
+          </div>
+
+          <div class="card-actions">
+            <button class="btn-secondary" (click)="openEditCardForm(card)">✏️ Edit</button>
+            <button class="btn-danger"    (click)="removeCard(card)">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-card" *ngIf="allCards.length === 0">
+        <div class="no-card__icon">💳</div>
+        <p>No saved cards yet</p>
+        <p class="no-card__sub">Add a card to speed up checkout</p>
+      </div>
+
+      <button class="btn-add-card" (click)="openAddCardForm()">
+        <i class="ri-add-line"></i> Add New Card
+      </button>
+
+    </ng-container>
+
+    <!-- ── Card Form (Add / Edit) ── -->
+    <div class="card-form-wrap" *ngIf="showCardForm">
+      <h3>{{ editingCard ? 'Edit Card' : 'Add New Card' }}</h3>
+
+      <div class="form-group" [class.has-error]="cardTouched.number && cardErrors.number">
+        <label>Card Number</label>
+        <input
+          type="text"
+          [(ngModel)]="cardForm.number"
+          (input)="formatCardNumber($event)"
+          maxlength="19"
+          placeholder="1234 5678 9012 3456"
+        />
+        <span class="field-error" *ngIf="cardTouched.number && cardErrors.number">
+          {{ cardErrors.number }}
+        </span>
+      </div>
+
+      <div class="form-group" [class.has-error]="cardTouched.holder && cardErrors.holder">
+        <label>Card Holder Name</label>
+        <input
+          type="text"
+          [(ngModel)]="cardForm.holder"
+          (blur)="validateHolder()"
+          placeholder="FULL NAME"
+          style="text-transform:uppercase"
+        />
+        <span class="field-error" *ngIf="cardTouched.holder && cardErrors.holder">
+          {{ cardErrors.holder }}
+        </span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" [class.has-error]="cardTouched.expiry && cardErrors.expiry">
+          <label>Expiry Date</label>
+          <input
+            type="text"
+            [(ngModel)]="cardForm.expiry"
+            (input)="formatExpiry($event)"
+            maxlength="5"
+            placeholder="MM/YY"
+          />
+          <span class="field-error" *ngIf="cardTouched.expiry && cardErrors.expiry">
+            {{ cardErrors.expiry }}
+          </span>
+        </div>
+
+        <div class="form-group" [class.has-error]="cardTouched.cvv && cardErrors.cvv">
+          <label>CVV</label>
+          <input
+            type="password"
+            [(ngModel)]="cardForm.cvv"
+            (input)="formatCvv($event)"
+            maxlength="3"
+            placeholder="•••"
+          />
+          <span class="field-error" *ngIf="cardTouched.cvv && cardErrors.cvv">
+            {{ cardErrors.cvv }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group" [class.has-error]="cardTouched.address && cardErrors.address">
+        <label>Exact Address</label>
+        <input
+          type="text"
+          [(ngModel)]="cardForm.address"
+          (blur)="validateAddress()"
+          placeholder="City, Street, Apt..."
+        />
+        <span class="field-error" *ngIf="cardTouched.address && cardErrors.address">
+          {{ cardErrors.address }}
+        </span>
+      </div>
+
+      <div class="card-brand-preview" *ngIf="cardBrand">
+        <i class="ri-visa-line" *ngIf="cardBrand === 'visa'"></i>
+        <span class="mc"        *ngIf="cardBrand === 'mastercard'">MC</span>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" (click)="closeCardForm()">Cancel</button>
+        <button class="btn-primary"   (click)="saveCard()">Save Card</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── HISTORY TAB ────────────────────────── -->
+  <div class="tab-content" *ngIf="activeTab==='history'">
+    <div class="history-empty" *ngIf="payments.length === 0 && !isLoading">
+      <div class="history-empty__icon">🧾</div>
+      <p>No orders yet</p>
+    </div>
+    <div class="payment-list" *ngIf="payments.length > 0">
+      <div class="payment-item" *ngFor="let p of payments">
+        <div class="payment-item__left">
+          <div class="payment-item__date">{{ p.paidAt | date:'dd MMM yyyy, HH:mm' }}</div>
+          <div class="payment-item__card">{{ p.cardNumber }}</div>
+          <div class="payment-item__holder">{{ p.cardHolderName }}</div>
+          <div class="payment-item__expiry">Expires: {{ p.expiryDate }}</div>
+          <div class="payment-item__address" *ngIf="p.exactAddress">
+            <i class="ri-map-pin-line"></i> {{ p.exactAddress }}
+          </div>
+        </div>
+        <div class="payment-item__right">
+          <div class="payment-item__amount">₾{{ p.amount }}</div>
+          <span class="badge-ok">{{ p.status }}</span>
+          <button class="btn-danger btn-sm" (click)="deletePayment(p.id)">🗑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Photo Modal -->
+<div class="photo-modal" *ngIf="photoModalOpen" (click)="closePhotoModal()">
+  <div class="photo-modal__content" (click)="$event.stopPropagation()">
+    <button class="photo-modal__close" (click)="closePhotoModal()">✕</button>
+    <img [src]="currentPhoto || getDefaultAvatar()"
+         class="photo-modal__img" (error)="onImgError($event)" />
+    <label class="photo-modal__change" for="photoInputModal">
+      <i class="ri-camera-line"></i> Change Photo
+    </label>
+    <input id="photoInputModal" type="file" accept="image/*"
+           (change)="onFileSelected($event)" style="display:none"/>
+  </div>
+</div>

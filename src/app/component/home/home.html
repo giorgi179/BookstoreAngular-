@@ -1,0 +1,163 @@
+<div class="box1">
+  <div class="box1-div1">
+    <h1 class="box1-div1-h1">{{ 'HERO_TEXT' | translate }}</h1>
+  </div>
+  <div class="box1-div2">
+    <h4 class="text1">BINK. Publishers</h4>
+    <h1 class="text">{{ 'BESTSELLERS' | translate }}</h1>
+  </div>
+</div>
+
+<!-- Success toast -->
+<div class="toast success-toast" *ngIf="successMessage">{{ successMessage }}</div>
+<!-- Out of stock error toast -->
+<div class="toast error-toast" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+<div class="books-section">
+
+  <div class="books-grid">
+    <div class="book-card" *ngFor="let book of books | slice:0:6">
+      <div class="badge" *ngIf="book.isBestSale">{{ 'BEST_SALE' | translate }}</div>
+      <div class="out-of-stock-badge" *ngIf="!book.stock || book.stock <= 0">
+        {{ 'OUT_OF_STOCK' | translate }}
+      </div>
+      <div class="img-wrap">
+        <img [src]="book.bookUrl || 'https://via.placeholder.com/150x200'" [alt]="book.title" class="book-img" />
+        <div class="quick-view" (click)="openQuickView(book)">{{ 'QUICK_VIEW' | translate }}</div>
+      </div>
+      <h3 class="book-title">{{ book.title }}</h3>
+      <p class="book-price">${{ book.price }}</p>
+      <button
+        class="add-btn"
+        [class.out-of-stock]="!book.stock || book.stock <= 0"
+        [disabled]="!book.stock || book.stock <= 0"
+        (click)="addToCart(book)">
+        {{ (!book.stock || book.stock <= 0) ? ('OUT_OF_STOCK' | translate) : ('ADD_TO_CART' | translate) }}
+      </button>
+    </div>
+  </div>
+
+  <div class="texts">
+    <p class="section-sub">{{ 'THIS_MONTHS' | translate }}</p>
+    <div class="divider"></div>
+    <h1 class="section-title">{{ 'RECOMMENDED' | translate }}</h1>
+    <div class="divider"></div>
+  </div>
+
+  <div class="books-grid">
+    <div class="book-card" *ngFor="let book of books | slice:6:12">
+      <div class="badge" *ngIf="book.isBestSale">{{ 'BEST_SALE' | translate }}</div>
+      <div class="out-of-stock-badge" *ngIf="!book.stock || book.stock <= 0">
+        {{ 'OUT_OF_STOCK' | translate }}
+      </div>
+      <div class="img-wrap">
+        <img [src]="book.bookUrl || 'https://via.placeholder.com/150x200'" [alt]="book.title" class="book-img" />
+        <div class="quick-view" (click)="openQuickView(book)">{{ 'QUICK_VIEW' | translate }}</div>
+      </div>
+      <h3 class="book-title">{{ book.title }}</h3>
+      <p class="book-price">${{ book.price }}</p>
+      <button
+        class="add-btn"
+        [class.out-of-stock]="!book.stock || book.stock <= 0"
+        [disabled]="!book.stock || book.stock <= 0"
+        (click)="addToCart(book)">
+        {{ (!book.stock || book.stock <= 0) ? ('OUT_OF_STOCK' | translate) : ('ADD_TO_CART' | translate) }}
+      </button>
+    </div>
+  </div>
+
+  <div class="quote-banner">
+    <div class="divider"></div>
+    <h1 class="quote-text">{{ 'QUOTE' | translate }}</h1>
+    <button class="story-btn" (click)="goToStory()">{{ 'READ_STORY' | translate }}</button>
+    <div class="divider"></div>
+  </div>
+
+</div>
+
+<div class="featured-section" *ngIf="books.length > 0">
+  <div class="featured-info">
+    <p class="featured-sub">{{ 'BOOK_OF_MONTH' | translate }}</p>
+    <div class="divider-dark"></div>
+    <h1 class="featured-title">{{ books[0].title }}</h1>
+    <p class="featured-author">{{ books[0].bookDetails?.author }}</p>
+    <div class="divider-dark"></div>
+    <p class="featured-desc">{{ books[0].bookDetails?.description }}</p>
+    <p class="featured-price">${{ books[0].price }}</p>
+    <button class="featured-btn" (click)="addToCart(books[0])">{{ 'ADD_TO_CART' | translate }}</button>
+  </div>
+  <div class="featured-img-wrap">
+    <img [src]="books[0].bookUrl || 'https://via.placeholder.com/400x600'" [alt]="books[0].title" class="featured-img" />
+  </div>
+</div>
+
+<!-- QUICK VIEW MODAL -->
+<div class="modal-overlay" *ngIf="selectedBook" (click)="closeQuickView()">
+  <div class="qv-modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeQuickView()">✕</button>
+    <div class="qv-left">
+      <img [src]="selectedBook.bookUrl || 'https://via.placeholder.com/300x450'" [alt]="selectedBook.title" class="qv-img" />
+    </div>
+    <div class="qv-right">
+      <p class="qv-category">{{ selectedBook.category?.name || 'Book' }}</p>
+      <h2 class="qv-title">{{ selectedBook.title }}</h2>
+      <p class="qv-author">by {{ selectedBook.bookDetails?.author }}</p>
+      <p class="qv-price">${{ selectedBook.price }}</p>
+      <div class="qv-divider"></div>
+      <div class="qv-details">
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.description">
+          <span class="qv-label">{{ 'DESCRIPTION' | translate }}</span>
+          <p class="qv-value">{{ selectedBook.bookDetails?.description }}</p>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.publisher">
+          <span class="qv-label">{{ 'PUBLISHER' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.publisher }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.pageCount">
+          <span class="qv-label">{{ 'PAGES' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.pageCount }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.language">
+          <span class="qv-label">{{ 'LANGUAGE' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.language }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.publishedDate">
+          <span class="qv-label">{{ 'PUBLISHED' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.publishedDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.isbn">
+          <span class="qv-label">ISBN</span>
+          <span class="qv-value">{{ selectedBook.isbn }}</span>
+        </div>
+        <div class="qv-detail-row">
+          <span class="qv-label">{{ 'STOCK' | translate }}</span>
+          <span class="qv-value" [style.color]="selectedBook.stock > 0 ? '#4caf50' : '#e63946'">
+            {{ selectedBook.stock > 0 ? ('IN_STOCK' | translate) + ' (' + selectedBook.stock + ')' : ('OUT_OF_STOCK' | translate) }}
+          </span>
+        </div>
+      </div>
+      <button
+        class="qv-add-btn"
+        [class.out-of-stock]="!selectedBook.stock || selectedBook.stock <= 0"
+        [disabled]="!selectedBook.stock || selectedBook.stock <= 0"
+        (click)="addToCart(selectedBook); closeQuickView()">
+        {{ (!selectedBook.stock || selectedBook.stock <= 0) ? ('OUT_OF_STOCK' | translate) : ('ADD_TO_CART' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="events-section"></div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" *ngIf="showAuthModal" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeModal()">✕</button>
+    <h2 class="modal-title">{{ 'JOIN_BINK' | translate }}</h2>
+    <p class="modal-desc">{{ 'SIGN_IN_DESC' | translate }}</p>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" (click)="goToLogin()">{{ 'SIGN_IN' | translate }}</button>
+      <button class="modal-btn-secondary" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
+    </div>
+  </div>
+</div>

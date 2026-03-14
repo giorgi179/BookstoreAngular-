@@ -1,0 +1,59 @@
+<div class="footer">
+  <div class="footer-content">
+
+    <div class="footer-col">
+      <h4 class="footer-heading">BINK. Publishers</h4>
+      <p>500 Terry Francine St.</p>
+      <p>San Francisco, CA 94158</p>
+      <p>123-456-7890</p>
+      <p>info&#64;my-domain.com</p>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Shop</h4>
+      <a href="#">FAQ</a>
+      <a href="#">Shipping &amp; Returns</a>
+      <a href="#">Store Policy</a>
+      <a href="#">Payment Methods</a>
+    </div>
+
+    <div class="footer-col">
+      <h4 class="footer-heading">Socials</h4>
+      <a href="#">Facebook</a>
+      <a href="#">Twitter</a>
+      <a href="https://www.instagram.com/g_meshveliani_15/">Instagram</a>
+      <a href="#">Pinterest</a>
+    </div>
+
+    <div class="footer-col footer-newsletter">
+      <h4 class="footer-heading">{{ 'NEWSLETTER_TITLE' | translate }}</h4>
+      <p class="newsletter-sub">{{ 'NEWSLETTER_SUB' | translate }}</p>
+      <label class="newsletter-label">{{ 'NEWSLETTER_LABEL' | translate }}</label>
+      <div class="newsletter-row">
+        <input
+          type="email"
+          class="newsletter-input"
+          [class.input-error]="errorMessage"
+          [class.input-success]="successMessage"
+          [(ngModel)]="email"
+          [disabled]="isLoading"
+          placeholder=""/>
+        <button class="newsletter-btn" (click)="subscribe()" [disabled]="isLoading">
+          {{ isLoading ? '...' : ('SUBSCRIBE' | translate) }}
+        </button>
+      </div>
+      <p class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</p>
+      <p class="success-msg" *ngIf="successMessage">{{ successMessage }}</p>
+      <label class="checkbox-label">
+        <input type="checkbox" [(ngModel)]="agreed" />
+        <span>{{ 'NEWSLETTER_AGREE' | translate }}</span>
+      </label>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2035 by Giorgi. Publishers. Powered and secured by <a href="https://www.instagram.com/g_meshveliani_15/" target="_blank">Giorgi</a></p>
+    <button class="scroll-top" (click)="scrollTop()">&#8743;</button>
+  </div>
+</div>

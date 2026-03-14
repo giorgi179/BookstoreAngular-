@@ -1,1 +1,21 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'https://unpkg.com/open-props' layer(design.system);
+@import 'https://unpkg.com/open-props/normalize.dark.min.css' layer(base.normalize);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@200..900&family=Pacifico&display=swap');
+@import 'https://www.unpkg.com/layout-craft@0.1.1/dist/utilities.css' layer(design.utilities);
+
+@layer base.normalize-overrides {
+  :root {
+    font-family: 'Inter', sans-serif;
+    --brand: oklch(64% 0.24 18);
+    --nav-block-size: 4.625rem;
+  }
+  body { -webkit-font-smoothing: antialiased; }
+  ul { list-style: none; }
+  :is(ul, li) { padding: 0; }
+  li { max-inline-size: unset; }
+  figure { all: unset; }
+}
+
+@layer base.app {
+  body { background: white; }
+}

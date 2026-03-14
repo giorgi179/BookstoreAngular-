@@ -1,0 +1,72 @@
+<div class="login-wrapper">
+
+  <div class="login-left">
+    <div class="left-content">
+      <div class="brand-mark">
+        <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="6" width="24" height="36" rx="3" stroke="#c9a96e" stroke-width="1.5" fill="#c9a96e" fill-opacity="0.08"/>
+          <rect x="16" y="6" width="24" height="36" rx="3" stroke="#c9a96e" stroke-width="1.5" fill="#c9a96e" fill-opacity="0.05"/>
+          <line x1="22" y1="16" x2="36" y2="16" stroke="#c9a96e" stroke-width="1.2" stroke-opacity="0.5"/>
+          <line x1="22" y1="22" x2="36" y2="22" stroke="#c9a96e" stroke-width="1.2" stroke-opacity="0.35"/>
+          <line x1="22" y1="28" x2="30" y2="28" stroke="#c9a96e" stroke-width="1.2" stroke-opacity="0.25"/>
+        </svg>
+      </div>
+      <div class="brand-name">Librarium</div>
+      <div class="brand-tagline">Book Management System</div>
+
+      <div class="feature-list">
+        <div class="feature-item"><span class="dot"></span>Full book inventory control</div>
+        <div class="feature-item"><span class="dot"></span>User & order management</div>
+        <div class="feature-item"><span class="dot"></span>Real-time analytics</div>
+      </div>
+    </div>
+    <div class="deco">
+      <div class="ring r1"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-card">
+      <div class="card-top">
+        <h2>Admin Panel</h2>
+        <p>Sign in to your account</p>
+      </div>
+
+      <div class="form-group">
+        <label>Username / Email</label>
+        <input
+          type="text"
+          [(ngModel)]="email"
+          placeholder="Enter your username"
+          (keyup.enter)="login()"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Enter your password"
+          (keyup.enter)="login()"
+          autocomplete="off"
+        />
+      </div>
+
+      <p class="error-msg" *ngIf="error">⚠ {{ error }}</p>
+
+      <button class="login-btn" (click)="login()" [disabled]="loading">
+        <span *ngIf="!loading">Sign In</span>
+        <span *ngIf="loading" class="loader"></span>
+      </button>
+
+      <div class="card-footer">
+        Librarium &copy; 2026 &mdash; Admin Access Only
+      </div>
+    </div>
+  </div>
+
+</div>

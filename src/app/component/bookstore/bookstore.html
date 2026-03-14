@@ -1,0 +1,198 @@
+<div class="store-header">
+  <p class="sub">{{ 'ABOUT_SUB' | translate }}</p>
+  <h1>{{ 'BESTSELLERS' | translate }}</h1>
+</div>
+
+<div class="store-layout">
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-toggle" (click)="toggleSidebar()">
+      <span>{{ 'FILTER_BY' | translate }}</span>
+      <span class="toggle-arrow">{{ sidebarOpen ? '▲' : '▼' }}</span>
+    </div>
+    <div class="sidebar-content">
+      <p class="sidebar-title">{{ 'FILTER_BY' | translate }}</p>
+      <div class="filter-section">
+        <div class="filter-section-title">{{ 'SEARCH' | translate }}</div>
+        <div class="filter-divider"></div>
+        <input class="search-input" type="text" [placeholder]="'SEARCH' | translate"
+          [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()"/>
+      </div>
+      <div class="filter-section">
+        <div class="filter-section-header" (click)="priceOpen = !priceOpen">
+          <span class="filter-section-title">{{ 'PRICE' | translate }}</span>
+          <span class="toggle-icon">{{ priceOpen ? '−' : '+' }}</span>
+        </div>
+        <div class="filter-divider"></div>
+        <div *ngIf="priceOpen" class="price-range-wrap">
+          <div class="price-labels">
+            <span>${{ selectedMinPrice }}</span>
+            <span>${{ selectedMaxPrice }}</span>
+          </div>
+          <div class="slider-row">
+            <input type="range" [min]="minPrice" [max]="maxPrice"
+              [(ngModel)]="selectedMinPrice" (ngModelChange)="onPriceChange()" class="range-input"/>
+            <input type="range" [min]="minPrice" [max]="maxPrice"
+              [(ngModel)]="selectedMaxPrice" (ngModelChange)="onPriceChange()" class="range-input"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <!-- Toasts -->
+    <div class="toast success-toast" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="toast error-toast"   *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="active-filters" *ngIf="hasActiveFilters">
+      <div class="filter-tag" *ngIf="searchQuery.trim()">
+        "{{ searchQuery }}" <button (click)="searchQuery=''; applyFilters()">×</button>
+      </div>
+      <div class="filter-tag" *ngIf="hasPriceFilter">
+        ${{ selectedMinPrice }}–${{ selectedMaxPrice }}
+        <button (click)="removePriceFilter()">×</button>
+      </div>
+      <button class="clear-all" (click)="clearAllFilters()">{{ 'CLEAR_ALL_FILTERS' | translate }}</button>
+    </div>
+
+    <div class="results-bar">
+      <span class="results-title">{{ 'ALL_PRODUCTS' | translate }}</span>
+      <span class="results-count">{{ filteredBooks.length }} {{ 'PRODUCTS' | translate }}</span>
+    </div>
+
+    <!-- Desktop: arrows wrap the grid -->
+    <div class="carousel-wrapper">
+      <button class="carousel-arrow carousel-arrow--left" (click)="prevPage()" [disabled]="currentPage === 0">
+        <span>&#8592;</span>
+      </button>
+
+      <div class="books-grid">
+        <div class="book-card" *ngFor="let book of pagedBooks">
+          <div class="book-img-wrap">
+            <img [src]="book.bookUrl || 'https://via.placeholder.com/200x300'" [alt]="book.title"/>
+            <div class="quick-view" (click)="openQuickView(book)">{{ 'QUICK_VIEW' | translate }}</div>
+            <div class="stock-overlay" *ngIf="!book.stock || book.stock <= 0">
+              {{ 'OUT_OF_STOCK' | translate }}
+            </div>
+          </div>
+          <div class="book-info">
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-author">{{ book.bookDetails?.author }}</p>
+            <div class="book-footer">
+              <span class="book-price">${{ book.price }}</span>
+              <button class="add-btn"
+                [class.out-of-stock]="!book.stock || book.stock <= 0"
+                [disabled]="!book.stock || book.stock <= 0"
+                (click)="addToCart(book)">
+                {{ (!book.stock || book.stock <= 0) ? ('OUT_OF_STOCK' | translate) : ('ADD_TO_CART' | translate) }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredBooks.length === 0">
+          <h3>{{ 'NO_BOOKS_FOUND' | translate }}</h3>
+          <p *ngIf="searchQuery.trim()">No results for "{{ searchQuery }}"</p>
+          <p *ngIf="hasPriceFilter && !searchQuery.trim()">No books in ${{ selectedMinPrice }}–${{ selectedMaxPrice }} range</p>
+        </div>
+      </div>
+
+      <button class="carousel-arrow carousel-arrow--right" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+        <span>&#8594;</span>
+      </button>
+    </div>
+
+    <!-- Bottom nav: dots + arrows (arrows hidden on desktop via CSS) -->
+    <div class="carousel-nav" *ngIf="totalPages > 1 || filteredBooks.length > 0">
+      <button class="carousel-arrow carousel-arrow--mobile" (click)="prevPage()" [disabled]="currentPage === 0">
+        <span>&#8592;</span>
+      </button>
+
+      <div class="carousel-dots" *ngIf="totalPages > 1">
+        <span class="carousel-dot" *ngFor="let p of pagesArray; let i = index"
+          [class.active]="i === currentPage" (click)="goToPage(i)">
+        </span>
+      </div>
+
+      <div class="carousel-page-info" *ngIf="filteredBooks.length > 0">
+        {{ currentPage + 1 }} / {{ totalPages }}
+      </div>
+
+      <button class="carousel-arrow carousel-arrow--mobile" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">
+        <span>&#8594;</span>
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<!-- QUICK VIEW MODAL -->
+<div class="modal-overlay" *ngIf="selectedBook" (click)="closeQuickView()">
+  <div class="qv-modal" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeQuickView()">✕</button>
+    <div class="qv-left">
+      <img [src]="selectedBook.bookUrl || 'https://via.placeholder.com/300x450'" [alt]="selectedBook.title" class="qv-img"/>
+    </div>
+    <div class="qv-right">
+      <p class="qv-category">{{ selectedBook.category?.name || 'Book' }}</p>
+      <h2 class="qv-title">{{ selectedBook.title }}</h2>
+      <p class="qv-author">by {{ selectedBook.bookDetails?.author }}</p>
+      <p class="qv-price">${{ selectedBook.price }}</p>
+      <div class="qv-divider"></div>
+      <div class="qv-details">
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.description">
+          <span class="qv-label">{{ 'DESCRIPTION' | translate }}</span>
+          <p class="qv-value">{{ selectedBook.bookDetails?.description }}</p>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.publisher">
+          <span class="qv-label">{{ 'PUBLISHER' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.publisher }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.pageCount">
+          <span class="qv-label">{{ 'PAGES' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.pageCount }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.language">
+          <span class="qv-label">{{ 'LANGUAGE' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.language }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.bookDetails?.publishedDate">
+          <span class="qv-label">{{ 'PUBLISHED' | translate }}</span>
+          <span class="qv-value">{{ selectedBook.bookDetails?.publishedDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="qv-detail-row" *ngIf="selectedBook.isbn">
+          <span class="qv-label">ISBN</span>
+          <span class="qv-value">{{ selectedBook.isbn }}</span>
+        </div>
+        <div class="qv-detail-row">
+          <span class="qv-label">{{ 'STOCK' | translate }}</span>
+          <span class="qv-value" [style.color]="selectedBook.stock > 0 ? '#4caf50' : '#e63946'">
+            {{ selectedBook.stock > 0
+              ? ('IN_STOCK' | translate) + ' (' + selectedBook.stock + ')'
+              : ('OUT_OF_STOCK' | translate) }}
+          </span>
+        </div>
+      </div>
+      <button class="qv-add-btn"
+        [class.out-of-stock]="!selectedBook.stock || selectedBook.stock <= 0"
+        [disabled]="!selectedBook.stock || selectedBook.stock <= 0"
+        (click)="addToCart(selectedBook); closeQuickView()">
+        {{ (!selectedBook.stock || selectedBook.stock <= 0) ? ('OUT_OF_STOCK' | translate) : ('ADD_TO_CART' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" *ngIf="showAuthModal" (click)="closeModal()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeModal()">✕</button>
+    <h2 class="modal-title">{{ 'JOIN_BINK' | translate }}</h2>
+    <p class="modal-desc">{{ 'SIGN_IN_DESC' | translate }}</p>
+    <div class="modal-btns">
+      <button class="modal-btn-primary" (click)="goToLogin()">{{ 'SIGN_IN' | translate }}</button>
+      <button class="modal-btn-secondary" (click)="goToRegister()">{{ 'REGISTER' | translate }}</button>
+    </div>
+  </div>
+</div>

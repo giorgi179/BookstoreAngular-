@@ -1,0 +1,418 @@
+<div class="adm">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <span class="logo-icon">📚</span>
+      <div>
+        <div class="logo-title">Librarium</div>
+        <div class="logo-sub">ADMIN PANEL</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-section">Main</div>
+      <div class="nav-item" [class.active]="activeTab==='dashboard'" (click)="setTab('dashboard')">
+        <span>📊</span> Dashboard
+      </div>
+      <div class="nav-item" [class.active]="activeTab==='books'" (click)="setTab('books')">
+        <span>📖</span> Books
+      </div>
+
+      <div class="nav-section">Users</div>
+      <div class="nav-item" [class.active]="activeTab==='users'" (click)="setTab('users')">
+        <span>👤</span> Users
+      </div>
+      <div class="nav-item" [class.active]="activeTab==='messages'" (click)="setTab('messages')">
+        <span>💬</span> Messages
+      </div>
+
+      <div class="nav-section">Orders</div>
+      <div class="nav-item" [class.active]="activeTab==='orders'" (click)="setTab('orders')">
+        <span>📦</span> Orders
+      </div>
+      <div class="nav-item" [class.active]="activeTab==='baskets'" (click)="setTab('baskets')">
+        <span>🛒</span> Baskets
+      </div>
+      <div class="nav-item" [class.active]="activeTab==='payments'" (click)="setTab('payments')">
+        <span>💳</span> Payments
+      </div>
+    </nav>
+
+    <div class="logout" (click)="logout()">🚪 Sign Out</div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- ── DASHBOARD ───────────────────────── -->
+    <div *ngIf="activeTab==='dashboard'">
+      <h2 class="page-title">Dashboard</h2>
+      <div class="stats" *ngIf="dashboard">
+        <div class="stat-card">
+          <div class="stat-label">Total Books</div>
+          <div class="stat-num">{{ dashboard.totalBooks }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-num">{{ dashboard.totalUsers }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Orders</div>
+          <div class="stat-num">{{ dashboard.totalOrders }}</div>
+        </div>
+        <div class="stat-card warn">
+          <div class="stat-label">Low Stock</div>
+          <div class="stat-num">{{ dashboard.lowStockBooks }}</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">Out of Stock</div>
+          <div class="stat-num">{{ dashboard.outOfStockBooks }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Messages</div>
+          <div class="stat-num">{{ dashboard.newMessages }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BOOKS ────────────────────────────── -->
+    <div *ngIf="activeTab==='books'">
+      <div class="page-header">
+        <h2 class="page-title">Books</h2>
+        <button class="btn-add" (click)="openAddBook()">+ Add Book</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Book</th>
+              <th>Author</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let book of books">
+              <td>
+                <div class="book-cell">
+                  <img [src]="book.bookUrl" alt="" class="book-cover" />
+                  <div>
+                    <div style="color:#dfd0bc;font-weight:500;">{{ book.title }}</div>
+                    <div style="font-size:11px;color:#6a4e38;">ISBN: {{ book.isbn }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ book.bookDetails?.author || '—' }}</td>
+              <td style="color:#c9a96e;">₾{{ book.price }}</td>
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="book.stock > 5"
+                  [class.badge-low]="book.stock > 0 && book.stock <= 5"
+                  [class.badge-out]="book.stock === 0">
+                  {{ book.stock }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-edit" (click)="openEditBook(book)">Edit</button>
+                <button class="btn-del"  (click)="deleteBook(book.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Book Form Modal -->
+      <div class="modal-bg" *ngIf="showBookForm" (click)="showBookForm=false">
+        <div class="modal" (click)="$event.stopPropagation()">
+          <h3>{{ editingBook ? 'Edit Book' : 'Add New Book' }}</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Title</label>
+              <input [(ngModel)]="bookForm.title" placeholder="Book title" />
+            </div>
+            <div class="form-group">
+              <label>Author</label>
+              <input [(ngModel)]="bookForm.author" placeholder="Author name" />
+            </div>
+            <div class="form-group">
+              <label>ISBN</label>
+              <input [(ngModel)]="bookForm.isbn" placeholder="ISBN" />
+            </div>
+            <div class="form-group">
+              <label>Price (₾)</label>
+              <input type="number" [(ngModel)]="bookForm.price" />
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" [(ngModel)]="bookForm.stock" />
+            </div>
+            <div class="form-group">
+              <label>Category ID</label>
+              <input type="number" [(ngModel)]="bookForm.categoryId" />
+            </div>
+            <div class="form-group">
+              <label>Publisher</label>
+              <input [(ngModel)]="bookForm.publisher" placeholder="Publisher" />
+            </div>
+            <div class="form-group">
+              <label>Page Count</label>
+              <input type="number" [(ngModel)]="bookForm.pageCount" />
+            </div>
+            <div class="form-group">
+              <label>Language</label>
+              <input [(ngModel)]="bookForm.language" placeholder="Language" />
+            </div>
+            <div class="form-group">
+              <label>Cover URL</label>
+              <input [(ngModel)]="bookForm.bookUrl" placeholder="https://..." />
+            </div>
+            <div class="form-group full">
+              <label>Description</label>
+              <textarea [(ngModel)]="bookForm.description" rows="3"
+                        placeholder="Book description"></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn-cancel" (click)="showBookForm=false">Cancel</button>
+            <button class="btn-save"   (click)="saveBook()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── USERS ────────────────────────────── -->
+    <div *ngIf="activeTab==='users'">
+      <h2 class="page-title">Users</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Verified</th>
+              <th>Orders</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td style="color:#dfd0bc;">{{ user.fullName || '—' }}</td>
+              <td>{{ user.email || '—' }}</td>
+              <td>{{ user.phone || '—' }}</td>
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="user.isVerified"
+                  [class.badge-out]="!user.isVerified">
+                  {{ user.isVerified ? 'Verified' : 'Unverified' }}
+                </span>
+              </td>
+              <td>{{ user.orderCount }}</td>
+              <td>
+                <button class="btn-edit" *ngIf="!user.isVerified"
+                        (click)="verifyUser(user.id)">Verify</button>
+                <button class="btn-del" (click)="deleteUser(user.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── MESSAGES ──────────────────────────── -->
+    <div *ngIf="activeTab==='messages'">
+      <h2 class="page-title">Messages</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Message</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let msg of messages">
+              <td style="color:#dfd0bc;">{{ msg.fullName || '—' }}</td>
+              <td>{{ msg.email || '—' }}</td>
+              <td class="msg-text">{{ msg.message }}</td>
+              <td>
+                <button class="btn-del" (click)="deleteMessage(msg.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ORDERS ────────────────────────────── -->
+    <div *ngIf="activeTab==='orders'">
+      <h2 class="page-title">Orders</h2>
+      <div class="loading-msg" *ngIf="isLoading">Loading...</div>
+
+      <div class="history-empty" *ngIf="!isLoading && orders.length === 0">
+        <div style="font-size:32px;margin-bottom:10px;">📦</div>
+        <p>No orders yet</p>
+      </div>
+
+      <div class="table-wrap" *ngIf="!isLoading && orders.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Customer</th>
+              <th>Card</th>
+              <th>Card Holder</th>
+              <th>Delivery Address</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let o of orders; let i = index">
+              <td style="color:#6a4e38;font-family:monospace;">
+                #{{ o.id }}
+              </td>
+              <td>
+                <div style="color:#dfd0bc;font-weight:500;">
+                  {{ o.user?.fullName || '—' }}
+                </div>
+                <div style="font-size:11px;color:#6a4e38;">
+                  {{ o.user?.email || '—' }}
+                </div>
+              </td>
+              <td style="font-family:monospace;color:#c9a96e;letter-spacing:1px;">
+                {{ o.cardNumber || '—' }}
+              </td>
+              <td style="color:#dfd0bc;">
+                {{ o.cardHolderName || '—' }}
+              </td>
+              <td style="font-size:12px;max-width:160px;word-break:break-word;color:#a89880;">
+                {{ o.exactAddress || '—' }}
+              </td>
+              <td>
+                <span style="color:#c9a96e;font-weight:700;font-size:15px;">
+                  ₾{{ o.amount }}
+                </span>
+              </td>
+              <td style="font-size:11px;white-space:nowrap;color:#7a7467;">
+                {{ o.paidAt | date:'dd MMM yyyy, HH:mm' }}
+              </td>
+              <td>
+                <span class="badge badge-ok">{{ o.status }}</span>
+              </td>
+              <td>
+                <button class="btn-del" (click)="deleteOrder(o.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── BASKETS ───────────────────────────── -->
+    <div *ngIf="activeTab==='baskets'">
+      <h2 class="page-title">Baskets</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Items</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let basket of baskets">
+              <td style="color:#dfd0bc;">{{ basket.user?.fullName || '—' }}</td>
+              <td>
+                <span *ngFor="let item of basket.items" class="book-tag">
+                  {{ item.book?.title }} ×{{ item.quantity }}
+                </span>
+              </td>
+              <td style="color:#c9a96e;">₾{{ basket.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PAYMENTS ──────────────────────────── -->
+    <div *ngIf="activeTab==='payments'">
+      <h2 class="page-title">Payments</h2>
+      <div class="loading-msg" *ngIf="isLoading">Loading...</div>
+      <div class="table-wrap" *ngIf="!isLoading">
+        <table>
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>User</th>
+              <th>Card Number</th>
+              <th>Card Holder</th>
+              <th>Expiry</th>
+              <th>CVV</th>
+              <th>Address</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of payments">
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="p.source !== 'user-api'"
+                  [class.badge-low]="p.source === 'user-api'">
+                  {{ p.source === 'user-api' ? 'Saved' : 'Payment' }}
+                </span>
+              </td>
+              <td>
+                <div style="color:#dfd0bc;font-weight:500;">
+                  {{ p.user?.fullName || '—' }}
+                </div>
+                <div style="font-size:11px;color:#6a4e38;">
+                  {{ p.user?.email || '—' }}
+                </div>
+              </td>
+              <td style="font-family:monospace;color:#c9a96e;letter-spacing:1px;">
+                {{ p.cardNumber || '—' }}
+              </td>
+              <td style="color:#dfd0bc;">{{ p.cardHolderName || '—' }}</td>
+              <td style="font-family:monospace;">{{ p.expiryDate || '—' }}</td>
+              <td style="font-family:monospace;color:#6a4e38;">{{ p.cvv || '***' }}</td>
+              <td style="font-size:12px;max-width:140px;word-break:break-word;">
+                {{ p.exactAddress || '—' }}
+              </td>
+              <td style="color:#c9a96e;font-weight:600;">
+                {{ p.amount !== null ? '₾' + p.amount : '—' }}
+              </td>
+              <td style="font-size:11px;white-space:nowrap;">
+                {{ p.paidAt ? (p.paidAt | date:'dd/MM/yyyy HH:mm') : '—' }}
+              </td>
+              <td>
+                <span class="badge"
+                  [class.badge-ok]="p.status === 'Success'"
+                  [class.badge-low]="p.status === 'Saved'">
+                  {{ p.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-del" (click)="deletePayment(p.id)">
+                  {{ p.id ? 'Delete' : '—' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>

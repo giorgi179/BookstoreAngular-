@@ -1,0 +1,1167 @@
+// =============================================================================
+// DESIGN TOKENS — Luxury Banking / Editorial
+// =============================================================================
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+$font-display : 'Cormorant Garamond', serif;
+$font-sans    : 'Syne', sans-serif;
+$font-mono    : 'DM Mono', monospace;
+
+// Palette — deep navy × warm cream × champagne gold
+$ink       : #0d0f14;
+$ink-soft  : #1e2330;
+$gold      : #b8964e;
+$gold-lt   : #d4af71;
+$cream     : #f5f1ea;
+$surface   : #faf8f4;
+$white     : #ffffff;
+$border    : rgba(#b8964e, .18);
+$border-md : rgba(#b8964e, .28);
+$muted     : #7a7467;
+$danger    : #c0392b;
+$success   : #2e7d54;
+
+// Radii
+$r-xs  : 4px;
+$r-sm  : 6px;
+$r-md  : 10px;
+$r-lg  : 16px;
+$r-xl  : 22px;
+$r-2xl : 32px;
+$pill  : 9999px;
+
+// Shadows
+$shadow-sm     : 0 2px 8px rgba($ink, .06);
+$shadow-md     : 0 6px 24px rgba($ink, .10);
+$shadow-lg     : 0 16px 48px rgba($ink, .13);
+$shadow-gold   : 0 6px 20px rgba($gold, .32);
+$shadow-danger : 0 4px 14px rgba($danger, .22);
+$shadow-inset  : inset 0 1px 0 rgba($white, .12);
+
+// Motion
+$ease-out-expo : cubic-bezier(.16, 1, .3, 1);
+$t             : .22s ease;
+$t-fast        : .14s ease;
+
+// =============================================================================
+// MIXINS
+// =============================================================================
+
+@mixin flex($dir: row, $align: center, $justify: flex-start, $gap: 0) {
+  display         : flex;
+  flex-direction  : $dir;
+  align-items     : $align;
+  justify-content : $justify;
+  @if $gap != 0 { gap: $gap; }
+}
+
+@mixin label-caps {
+  font-family    : $font-sans;
+  font-size      : 9px;
+  font-weight    : 700;
+  letter-spacing : 2px;
+  text-transform : uppercase;
+  color          : $muted;
+}
+
+@mixin btn-reset {
+  border         : none;
+  background     : none;
+  padding        : 0;
+  cursor         : pointer;
+  font-family    : $font-sans;
+}
+
+@mixin btn-base {
+  @include btn-reset;
+  display        : block;
+  width          : 100%;
+  padding        : 13px 10px;
+  border-radius  : $r-md;
+  font-size      : 10px;
+  font-weight    : 700;
+  letter-spacing : 1.6px;
+  text-transform : uppercase;
+  text-align     : center;
+  transition     : background $t, color $t, box-shadow $t, transform .14s ease;
+
+  &:active { transform: translateY(1px) !important; }
+}
+
+// =============================================================================
+// PAGE SHELL
+// =============================================================================
+
+.profile-page {
+  @include flex(column, center, flex-start);
+  min-height  : 100vh;
+  padding     : 48px 20px 64px;
+  background  : $cream;
+  font-family : $font-sans;
+  position    : relative;
+
+  &::before {
+    content        : '';
+    position       : fixed;
+    inset          : 0;
+    background     : url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events : none;
+    z-index        : 0;
+  }
+
+  > * { position: relative; z-index: 1; }
+}
+
+// =============================================================================
+// BACK BUTTON
+// =============================================================================
+
+.back-btn {
+  @include btn-reset;
+  @include flex(row, center, flex-start, 8px);
+  @include label-caps;
+  margin-bottom : 36px;
+  color         : $muted;
+  transition    : color $t, gap $t;
+  align-self    : flex-start;
+
+  &::before {
+    content    : '';
+    display    : inline-block;
+    width      : 20px;
+    height     : 1px;
+    background : currentColor;
+    transition : width $t;
+  }
+
+  &:hover {
+    color : $ink;
+    &::before { width: 28px; }
+  }
+}
+
+// =============================================================================
+// AVATAR SECTION
+// =============================================================================
+
+.avatar-section {
+  @include flex(row, flex-start, flex-start, 22px);
+  width         : 100%;
+  max-width     : 480px;
+  margin-bottom : 28px;
+  padding       : 24px;
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-xl;
+  box-shadow    : $shadow-sm;
+}
+
+.avatar-wrap {
+  position    : relative;
+  flex-shrink : 0;
+}
+
+.avatar-img {
+  display       : block;
+  width         : 84px;
+  height        : 84px;
+  border-radius : $r-lg;
+  object-fit    : cover;
+  border        : 1px solid $border-md;
+  cursor        : pointer;
+  transition    : transform $t, box-shadow $t;
+
+  &:hover {
+    transform  : scale(1.03);
+    box-shadow : $shadow-gold;
+  }
+}
+
+.avatar-edit {
+  @include flex(row, center, center);
+  position      : absolute;
+  bottom        : -8px;
+  right         : -8px;
+  width         : 28px;
+  height        : 28px;
+  background    : $ink;
+  color         : $white;
+  border        : 2px solid $cream;
+  border-radius : $pill;
+  font-size     : 12px;
+  cursor        : pointer;
+  transition    : background $t, transform $t;
+
+  &:hover { background: $gold; transform: scale(1.1); }
+
+  i { line-height: 1; }
+}
+
+.avatar-info {
+  @include flex(column, flex-start, flex-start, 0);
+  flex      : 1;
+  min-width : 0;
+}
+
+.user-name {
+  font-family   : $font-display;
+  font-size     : 26px;
+  font-weight   : 600;
+  font-style    : italic;
+  color         : $ink;
+  line-height   : 1.15;
+  margin-bottom : 4px;
+  white-space   : nowrap;
+  overflow      : hidden;
+  text-overflow : ellipsis;
+}
+
+.user-email {
+  font-family    : $font-mono;
+  font-size      : 11px;
+  font-weight    : 300;
+  color          : $muted;
+  margin-bottom  : 10px;
+  letter-spacing : .3px;
+}
+
+// =============================================================================
+// BADGES
+// =============================================================================
+
+%badge-base {
+  display        : inline-flex;
+  align-items    : center;
+  gap            : 5px;
+  padding        : 4px 11px;
+  border-radius  : $pill;
+  font-family    : $font-sans;
+  font-size      : 9px;
+  font-weight    : 700;
+  letter-spacing : 1.5px;
+  text-transform : uppercase;
+}
+
+.badge-verified {
+  @extend %badge-base;
+  background : rgba($success, .1);
+  color      : $success;
+  border     : 1px solid rgba($success, .22);
+}
+
+.badge-unverified {
+  @extend %badge-base;
+  background : rgba(#e65100, .08);
+  color      : #c04a00;
+  border     : 1px solid rgba(#e65100, .18);
+}
+
+.badge-ok {
+  @extend %badge-base;
+  padding    : 3px 9px;
+  font-size  : 8px;
+  background : rgba($success, .1);
+  color      : $success;
+  border     : 1px solid rgba($success, .2);
+}
+
+.badge-primary {
+  @extend %badge-base;
+  background : rgba($gold, .12);
+  color      : darken($gold, 8%);
+  border     : 1px solid rgba($gold, .28);
+  font-size  : 8px;
+  padding    : 3px 9px;
+}
+
+// =============================================================================
+// STATUS MESSAGES
+// =============================================================================
+
+.msg {
+  @include flex(row, center, flex-start, 10px);
+  width          : 100%;
+  max-width      : 480px;
+  padding        : 13px 16px;
+  margin-bottom  : 16px;
+  border-radius  : $r-md;
+  font-size      : 12px;
+  font-weight    : 500;
+  letter-spacing : .2px;
+
+  &.success {
+    background : rgba($success, .07);
+    border     : 1px solid rgba($success, .2);
+    color      : darken($success, 8%);
+
+    &::before {
+      content         : '✓';
+      display         : flex;
+      align-items     : center;
+      justify-content : center;
+      width           : 18px;
+      height          : 18px;
+      border-radius   : $pill;
+      background      : $success;
+      color           : $white;
+      font-size       : 10px;
+      font-weight     : 700;
+      flex-shrink     : 0;
+    }
+  }
+
+  &.error {
+    background : rgba($danger, .06);
+    border     : 1px solid rgba($danger, .18);
+    color      : $danger;
+
+    &::before {
+      content         : '!';
+      display         : flex;
+      align-items     : center;
+      justify-content : center;
+      width           : 18px;
+      height          : 18px;
+      border-radius   : $pill;
+      background      : $danger;
+      color           : $white;
+      font-size       : 11px;
+      font-weight     : 700;
+      flex-shrink     : 0;
+    }
+  }
+
+  &.loading {
+    justify-content : center;
+    background      : transparent;
+    border          : none;
+    color           : $muted;
+    font-style      : italic;
+    font-family     : $font-display;
+    font-size       : 14px;
+  }
+}
+
+// =============================================================================
+// TABS
+// =============================================================================
+
+.tabs {
+  @include flex(row, stretch, flex-start);
+  width         : 100%;
+  max-width     : 480px;
+  margin-bottom : 20px;
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-lg;
+  padding       : 4px;
+  gap           : 3px;
+
+  button {
+    flex           : 1;
+    @include btn-reset;
+    padding        : 10px 6px;
+    border-radius  : $r-md;
+    font-size      : 11px;
+    font-weight    : 600;
+    letter-spacing : 1px;
+    text-transform : uppercase;
+    color          : $muted;
+    transition     : color $t, background $t;
+
+    &.active {
+      background : $ink;
+      color      : $white;
+      box-shadow : $shadow-sm;
+    }
+
+    &:hover:not(.active) { color: $ink; background: $cream; }
+  }
+}
+
+// =============================================================================
+// TAB CONTENT
+// =============================================================================
+
+.tab-content {
+  width     : 100%;
+  max-width : 480px;
+  animation : tabIn .3s $ease-out-expo;
+}
+
+@keyframes tabIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// =============================================================================
+// INFO CARD
+// =============================================================================
+
+.info-card {
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-xl;
+  overflow      : hidden;
+  box-shadow    : $shadow-sm;
+}
+
+.info-row {
+  @include flex(row, center, space-between);
+  padding       : 14px 22px;
+  border-bottom : 1px solid rgba($border, .6);
+  transition    : background $t-fast;
+
+  &:last-of-type { border-bottom: none; }
+  &:hover        { background: $cream; }
+}
+
+.info-label { @include label-caps; }
+
+.info-value {
+  font-family : $font-mono;
+  font-size   : 13px;
+  font-weight : 400;
+  color       : $ink;
+  text-align  : right;
+}
+
+// =============================================================================
+// ACTION GROUPS
+// =============================================================================
+
+.info-actions {
+  @include flex(row, center, flex-start, 8px);
+  padding : 18px 22px;
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger { flex: 1; }
+}
+
+.form-actions,
+.card-actions {
+  @include flex(row, center, flex-start, 8px);
+  margin-top : 20px;
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger { flex: 1; }
+}
+
+// =============================================================================
+// BUTTONS
+// =============================================================================
+
+.btn-primary {
+  @include btn-base;
+  background : $ink;
+  color      : $white;
+
+  &:hover {
+    background : $gold;
+    box-shadow : $shadow-gold;
+    transform  : translateY(-1px);
+  }
+}
+
+.btn-secondary {
+  @include btn-base;
+  background : transparent;
+  color      : $ink;
+  border     : 1.5px solid $border-md;
+
+  &:hover { background: $cream; border-color: $gold; color: $gold; }
+}
+
+.btn-danger {
+  @include btn-base;
+  background : transparent;
+  color      : $danger;
+  border     : 1.5px solid rgba($danger, .3);
+
+  &:hover {
+    background : $danger;
+    color      : $white;
+    box-shadow : $shadow-danger;
+    transform  : translateY(-1px);
+  }
+}
+
+.btn-sm {
+  padding        : 7px 12px;
+  font-size      : 9px;
+  letter-spacing : 1px;
+  width          : auto;
+  display        : inline-block;
+}
+
+.btn-add-card {
+  @include btn-reset;
+  @include flex(row, center, center, 8px);
+  width          : 100%;
+  padding        : 14px;
+  border         : 1.5px dashed $border-md;
+  border-radius  : $r-xl;
+  font-size      : 11px;
+  font-weight    : 700;
+  letter-spacing : 1.4px;
+  text-transform : uppercase;
+  color          : $muted;
+  transition     : border-color $t, color $t, background $t;
+  margin-top     : 4px;
+
+  i { font-size: 16px; }
+
+  &:hover { border-color: $gold; color: $gold; background: rgba($gold, .04); }
+}
+
+// =============================================================================
+// FORMS
+// =============================================================================
+
+.edit-form,
+.card-form-wrap {
+  padding       : 24px 22px;
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-xl;
+  box-shadow    : $shadow-sm;
+
+  h3 {
+    font-family    : $font-display;
+    font-size      : 22px;
+    font-weight    : 600;
+    font-style     : italic;
+    color          : $ink;
+    margin-bottom  : 22px;
+    padding-bottom : 14px;
+    border-bottom  : 1px solid $border;
+  }
+}
+
+.form-group {
+  margin-bottom : 16px;
+
+  label { @include label-caps; display: block; margin-bottom: 6px; }
+
+  input {
+    display       : block;
+    width         : 100%;
+    padding       : 12px 14px;
+    border-radius : $r-md;
+    border        : 1.5px solid rgba($border-md, .7);
+    background    : $surface;
+    font-family   : $font-mono;
+    font-size     : 13px;
+    font-weight   : 400;
+    color         : $ink;
+    outline       : none;
+    transition    : border-color $t, box-shadow $t, background $t;
+    box-sizing    : border-box;
+
+    &:focus {
+      border-color : $gold;
+      background   : $white;
+      box-shadow   : 0 0 0 3px rgba($gold, .1);
+    }
+
+    &::placeholder { color: lighten($muted, 20%); font-weight: 300; }
+  }
+
+  &.has-error input {
+    border-color : $danger;
+    box-shadow   : 0 0 0 3px rgba($danger, .07);
+  }
+}
+
+.form-row {
+  @include flex(row, flex-start, flex-start, 12px);
+  .form-group { flex: 1; }
+}
+
+.field-error {
+  display        : block;
+  margin-top     : 4px;
+  font-size      : 10px;
+  font-weight    : 500;
+  color          : $danger;
+  letter-spacing : .3px;
+}
+
+// =============================================================================
+// SAVED CARD WRAPPER
+// =============================================================================
+
+.saved-card {
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-xl;
+  padding       : 22px;
+  box-shadow    : $shadow-sm;
+}
+
+// =============================================================================
+// MULTI-CARD LIST
+// =============================================================================
+
+.cards-list {
+  @include flex(column, stretch, flex-start, 16px);
+  margin-bottom : 16px;
+}
+
+.card-item {
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-xl;
+  padding       : 22px;
+  box-shadow    : $shadow-sm;
+  transition    : box-shadow $t, border-color $t;
+  animation     : tabIn .3s $ease-out-expo;
+
+  &:hover { border-color: $gold; box-shadow: $shadow-md; }
+}
+
+// =============================================================================
+// BANK CARD VISUAL
+// =============================================================================
+
+.card-visual {
+  position      : relative;
+  overflow      : hidden;
+  border-radius : $r-xl;
+  padding       : 26px 24px 22px;
+  color         : $white;
+  margin-bottom : 16px;
+  background    : linear-gradient(135deg, #0d1520 0%, #192336 50%, #1a2840 100%);
+  box-shadow    : 0 12px 40px rgba(#0d1520, .45), $shadow-inset;
+
+  &::before {
+    content       : '';
+    position      : absolute;
+    top           : -40px;
+    right         : -40px;
+    width         : 160px;
+    height        : 160px;
+    border-radius : $pill;
+    background    : radial-gradient(circle, rgba($gold, .15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  &::after {
+    content    : '';
+    position   : absolute;
+    bottom     : 0;
+    left       : 0;
+    right      : 0;
+    height     : 1px;
+    background : linear-gradient(90deg, transparent, rgba($gold, .4), transparent);
+  }
+
+  &__top {
+    @include flex(row, center, space-between);
+    margin-bottom : 28px;
+    gap           : 8px;
+    flex-wrap     : wrap;
+
+    i { font-size: 22px; color: rgba($gold, .7); }
+  }
+
+  &__number {
+    font-family    : $font-mono;
+    font-size      : 17px;
+    font-weight    : 400;
+    letter-spacing : 5px;
+    margin-bottom  : 22px;
+    opacity        : .92;
+  }
+
+  &__bottom {
+    @include flex(row, flex-end, flex-start, 20px);
+    flex-wrap : wrap;
+  }
+}
+
+.bank-name {
+  font-family    : $font-sans;
+  font-size      : 13px;
+  font-weight    : 800;
+  letter-spacing : 2px;
+  text-transform : uppercase;
+  color          : $gold-lt;
+}
+
+.card-lbl {
+  display        : block;
+  font-family    : $font-sans;
+  font-size      : 7px;
+  letter-spacing : 1.5px;
+  text-transform : uppercase;
+  color          : rgba($white, .4);
+  margin-bottom  : 3px;
+}
+
+.card-val {
+  font-family    : $font-mono;
+  font-size      : 12px;
+  font-weight    : 500;
+  letter-spacing : .5px;
+  color          : rgba($white, .88);
+}
+
+.card-brand {
+  margin-left : auto;
+  @include flex(row, center, flex-end);
+  i { font-size: 22px; color: rgba($white, .75); }
+}
+
+.mc {
+  font-family    : $font-sans;
+  font-size      : 13px;
+  font-weight    : 800;
+  letter-spacing : 1px;
+  color          : rgba($white, .75);
+}
+
+.card-brand-preview {
+  @include flex(row, center, flex-start);
+  height        : 28px;
+  margin-bottom : 12px;
+  font-size     : 22px;
+  color         : $gold;
+  animation     : fadeIn .2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.card-address {
+  @include flex(row, center, flex-start, 7px);
+  margin-bottom  : 14px;
+  font-family    : $font-mono;
+  font-size      : 11px;
+  font-weight    : 300;
+  color          : $muted;
+  padding        : 8px 12px;
+  background     : $cream;
+  border         : 1px solid $border;
+  border-radius  : $r-md;
+  word-break     : break-word;
+
+  i { color: $gold; font-size: 13px; flex-shrink: 0; }
+}
+
+// =============================================================================
+// NO CARD
+// =============================================================================
+
+.no-card {
+  text-align    : center;
+  padding       : 48px 20px;
+  background    : $white;
+  border        : 1px dashed $border-md;
+  border-radius : $r-xl;
+
+  &__icon { font-size: 36px; margin-bottom: 14px; opacity: .5; }
+
+  p {
+    font-family   : $font-display;
+    font-size     : 18px;
+    font-weight   : 400;
+    font-style    : italic;
+    color         : $ink;
+    margin-bottom : 6px;
+  }
+
+  &__sub {
+    font-family    : $font-sans;
+    font-size      : 11px;
+    font-style     : normal;
+    color          : $muted;
+    margin-bottom  : 22px;
+    letter-spacing : .3px;
+  }
+
+  .btn-primary { display: inline-block; width: auto; padding: 13px 32px; }
+}
+
+// =============================================================================
+// ORDER HISTORY
+// =============================================================================
+
+.history-empty {
+  text-align    : center;
+  padding       : 48px 20px;
+  background    : $white;
+  border        : 1px dashed $border-md;
+  border-radius : $r-xl;
+
+  &__icon { font-size: 36px; margin-bottom: 14px; opacity: .4; }
+
+  p { font-family: $font-display; font-size: 18px; font-style: italic; color: $muted; }
+}
+
+.payment-list {
+  @include flex(column, stretch, flex-start, 10px);
+}
+
+.payment-item {
+  @include flex(row, flex-start, space-between, 16px);
+  padding       : 16px 20px;
+  background    : $white;
+  border        : 1px solid $border;
+  border-radius : $r-lg;
+  box-shadow    : $shadow-sm;
+  transition    : border-color $t, box-shadow $t, transform $t;
+
+  &:hover { border-color: $gold; box-shadow: $shadow-md; transform: translateY(-1px); }
+
+  &__left  { flex: 1; @include flex(column, flex-start, flex-start, 4px); min-width: 0; }
+  &__right { @include flex(column, flex-end, flex-start, 6px); text-align: right; flex-shrink: 0; }
+
+  &__date   { font-family: $font-mono; font-size: 10px; color: $muted; letter-spacing: .3px; }
+
+  &__card {
+    font-family    : $font-mono;
+    font-size      : 13px;
+    font-weight    : 500;
+    color          : $ink;
+    letter-spacing : 1.5px;
+    white-space    : nowrap;
+    overflow       : hidden;
+    text-overflow  : ellipsis;
+  }
+
+  &__holder {
+    font-family    : $font-sans;
+    font-size      : 11px;
+    font-weight    : 600;
+    color          : $ink-soft;
+    letter-spacing : .5px;
+    text-transform : uppercase;
+  }
+
+  &__expiry { font-family: $font-mono; font-size: 10px; color: $muted; font-weight: 300; }
+
+  &__address {
+    @include flex(row, center, flex-start, 5px);
+    font-family : $font-mono;
+    font-size   : 10px;
+    color       : $muted;
+    font-weight : 300;
+    word-break  : break-word;
+
+    i { color: $gold; font-size: 11px; flex-shrink: 0; }
+  }
+
+  &__amount {
+    font-family : $font-display;
+    font-size   : 20px;
+    font-weight : 600;
+    font-style  : italic;
+    color       : $ink;
+    line-height : 1;
+  }
+}
+
+// =============================================================================
+// PHOTO MODAL
+// =============================================================================
+
+.photo-modal {
+  position        : fixed;
+  inset           : 0;
+  z-index         : 9999;
+  @include flex(row, center, center);
+  padding         : 16px;
+  background      : rgba($ink, .88);
+  backdrop-filter : blur(12px) saturate(.8);
+  animation       : modalIn .22s ease;
+
+  &__content {
+    position  : relative;
+    z-index   : 1;
+    @include flex(column, center, center, 16px);
+    animation : modalUp .28s $ease-out-expo;
+  }
+
+  &__close {
+    @include btn-reset;
+    @include flex(row, center, center);
+    position      : absolute;
+    top           : -50px;
+    right         : 0;
+    width         : 32px;
+    height        : 32px;
+    background    : rgba($white, .1);
+    border        : 1px solid rgba($white, .18);
+    color         : rgba($white, .7);
+    border-radius : $pill;
+    font-size     : 14px;
+    transition    : background $t, color $t;
+
+    &:hover { background: rgba($white, .22); color: $white; }
+  }
+
+  &__img {
+    display       : block;
+    width         : min(300px, 80vw);
+    height        : min(300px, 80vw);
+    border-radius : $r-xl;
+    object-fit    : cover;
+    border        : 1px solid rgba($white, .12);
+    box-shadow    : 0 24px 64px rgba($ink, .5);
+  }
+
+  &__change {
+    @include flex(row, center, center, 9px);
+    padding        : 12px 28px;
+    background     : $white;
+    color          : $ink;
+    border         : none;
+    border-radius  : $r-md;
+    font-family    : $font-sans;
+    font-size      : 10px;
+    font-weight    : 700;
+    letter-spacing : 1.6px;
+    text-transform : uppercase;
+    cursor         : pointer;
+    transition     : background $t, color $t, transform $t;
+
+    &:hover { background: $gold; color: $white; transform: translateY(-1px); }
+
+    i { font-size: 14px; line-height: 1; }
+  }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modalUp {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+// =============================================================================
+// RESPONSIVE — 520px → 320px
+// =============================================================================
+
+// ── 520px ─────────────────────────────────────────────────────────────────────
+@media (max-width: 520px) {
+  .profile-page    { padding: 28px 14px 48px; }
+  .back-btn        { margin-bottom: 24px; }
+
+  .avatar-section  { padding: 18px; gap: 16px; border-radius: $r-lg; }
+  .avatar-img      { width: 72px; height: 72px; }
+  .user-name       { font-size: 22px; }
+  .user-email      { font-size: 10px; margin-bottom: 8px; }
+
+  .tabs            { border-radius: $r-md; }
+  .tabs button     { font-size: 10px; letter-spacing: .6px; padding: 9px 4px; }
+
+  .info-row        { padding: 12px 16px; }
+  .info-actions    { padding: 14px 16px; gap: 6px; }
+
+  .edit-form,
+  .card-form-wrap  { padding: 18px 16px; border-radius: $r-lg; }
+
+  .card-visual {
+    padding        : 20px 18px 18px;
+    border-radius  : $r-lg;
+
+    &__top         { margin-bottom: 20px; }
+    &__number      { font-size: 15px; letter-spacing: 4px; margin-bottom: 18px; }
+    &__bottom      { gap: 14px; }
+  }
+
+  .card-item       { padding: 18px; border-radius: $r-lg; }
+
+  .payment-item    { padding: 13px 14px; gap: 10px; }
+  .payment-item__amount { font-size: 18px; }
+  .payment-item__card   { font-size: 12px; letter-spacing: 1px; }
+
+  .btn-add-card    { padding: 13px; font-size: 10px; }
+
+  .photo-modal__img    { border-radius: $r-lg; }
+  .photo-modal__close  { width: 28px; height: 28px; font-size: 13px; top: -44px; }
+  .photo-modal__change { padding: 10px 22px; }
+}
+
+// ── 480px ─────────────────────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .avatar-img   { width: 68px; height: 68px; }
+  .user-name    { font-size: 21px; }
+
+  .info-actions {
+    flex-wrap : wrap;
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger { flex: 1 1 calc(50% - 4px); min-width: 80px; }
+  }
+
+  .card-actions {
+    flex-wrap : wrap;
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger { flex: 1 1 calc(50% - 4px); }
+  }
+
+  .card-visual__number { font-size: 14px; letter-spacing: 3px; }
+}
+
+// ── 420px ─────────────────────────────────────────────────────────────────────
+@media (max-width: 420px) {
+  .profile-page  { padding: 20px 12px 40px; }
+  .avatar-section { gap: 14px; padding: 16px; }
+  .avatar-img    { width: 64px; height: 64px; }
+  .avatar-edit   { width: 26px; height: 26px; font-size: 11px; bottom: -7px; right: -7px; }
+  .user-name     { font-size: 20px; }
+
+  .tabs button   { font-size: 9px; letter-spacing: .4px; padding: 8px 3px; }
+
+  .form-group input  { padding: 10px 12px; font-size: 12px; }
+  .form-group label  { font-size: 8px; }
+
+  .card-visual {
+    padding : 16px 14px;
+    &__number { font-size: 13px; letter-spacing: 2.5px; }
+    &__top    { margin-bottom: 16px; }
+    &__bottom { gap: 10px; }
+  }
+
+  .bank-name    { font-size: 11px; letter-spacing: 1.5px; }
+  .card-val     { font-size: 11px; }
+  .card-lbl     { font-size: 6.5px; }
+
+  .payment-item { padding: 11px 12px; gap: 8px; }
+  .payment-item__amount { font-size: 16px; }
+  .payment-item__card   { font-size: 11px; }
+  .payment-item__holder { font-size: 10px; }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger { font-size: 9px; letter-spacing: 1px; padding: 11px 6px; }
+
+  .btn-add-card { font-size: 9px; padding: 12px; }
+}
+
+// ── 375px ─────────────────────────────────────────────────────────────────────
+@media (max-width: 375px) {
+  .profile-page  { padding: 16px 10px 36px; }
+  .avatar-section { gap: 12px; padding: 14px; }
+  .avatar-img    { width: 60px; height: 60px; }
+  .user-name     { font-size: 18px; }
+  .user-email    { font-size: 9.5px; }
+
+  .tabs          { padding: 3px; gap: 2px; }
+  .tabs button   { font-size: 8.5px; padding: 8px 2px; }
+
+  .form-row      { flex-direction: column; gap: 0; }
+
+  .info-actions,
+  .form-actions,
+  .card-actions  { gap: 5px; }
+
+  .info-actions {
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger { flex: 1 1 100%; }
+  }
+
+  .card-visual {
+    padding   : 14px 12px;
+    &__number { font-size: 12px; letter-spacing: 2px; }
+  }
+
+  .card-item     { padding: 14px; }
+  .card-address  { font-size: 10px; padding: 7px 10px; }
+
+  .payment-item       { padding: 10px; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .payment-item__right { align-self: flex-end; flex-direction: row; align-items: center; gap: 8px; }
+  .payment-item__amount { font-size: 18px; }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger { padding: 10px 4px; font-size: 8.5px; letter-spacing: .8px; }
+
+  .photo-modal__close  { width: 26px; height: 26px; top: -40px; font-size: 12px; }
+  .photo-modal__change { padding: 9px 18px; font-size: 9px; }
+}
+
+// ── 320px ─────────────────────────────────────────────────────────────────────
+@media (max-width: 320px) {
+  .profile-page  { padding: 12px 8px 28px; }
+  .back-btn      { font-size: 8px; margin-bottom: 18px; }
+
+  .avatar-section { gap: 10px; padding: 12px; border-radius: $r-md; }
+  .avatar-img    { width: 52px; height: 52px; border-radius: $r-md; }
+  .avatar-edit   { width: 22px; height: 22px; font-size: 10px; bottom: -6px; right: -6px; }
+  .user-name     { font-size: 16px; }
+  .user-email    { font-size: 9px; margin-bottom: 6px; }
+
+  .badge-verified,
+  .badge-unverified { font-size: 7.5px; padding: 3px 8px; }
+
+  .tabs          { border-radius: $r-sm; padding: 3px; }
+  .tabs button   { font-size: 8px; padding: 7px 2px; letter-spacing: .3px; border-radius: $r-sm; }
+
+  .info-row      { padding: 10px 12px; }
+  .info-label    { font-size: 8px; letter-spacing: 1px; }
+  .info-value    { font-size: 11px; }
+  .info-actions  { padding: 12px; gap: 4px; }
+
+  .edit-form,
+  .card-form-wrap { padding: 14px 12px; border-radius: $r-md; }
+
+  .edit-form h3,
+  .card-form-wrap h3 { font-size: 18px; margin-bottom: 14px; padding-bottom: 10px; }
+
+  .form-group         { margin-bottom: 12px; }
+  .form-group label   { font-size: 7.5px; letter-spacing: 1px; }
+  .form-group input   { padding: 9px 10px; font-size: 11px; border-radius: $r-sm; }
+
+  .card-visual {
+    padding       : 12px 10px;
+    border-radius : $r-md;
+
+    &__top    { margin-bottom: 12px; }
+    &__number { font-size: 11px; letter-spacing: 1.5px; margin-bottom: 14px; }
+    &__bottom { gap: 8px; }
+  }
+
+  .bank-name  { font-size: 10px; letter-spacing: 1px; }
+  .card-val   { font-size: 10px; }
+  .card-lbl   { font-size: 6px; }
+
+  .card-item  { padding: 12px; border-radius: $r-md; }
+
+  .card-address { font-size: 9px; padding: 6px 8px; border-radius: $r-sm; }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    padding        : 9px 3px;
+    font-size      : 8px;
+    letter-spacing : .5px;
+    border-radius  : $r-sm;
+  }
+
+  .btn-add-card { padding: 10px; font-size: 8px; border-radius: $r-md; }
+
+  .payment-item        { padding: 9px 10px; }
+  .payment-item__card  { font-size: 10px; letter-spacing: .8px; }
+  .payment-item__amount { font-size: 15px; }
+  .badge-ok            { font-size: 7px; padding: 2px 6px; }
+
+  .photo-modal         { padding: 10px; }
+  .photo-modal__img    { border-radius: $r-md; }
+  .photo-modal__close  { width: 24px; height: 24px; top: -36px; font-size: 11px; }
+  .photo-modal__change { padding: 8px 14px; font-size: 8.5px; letter-spacing: 1px; }
+}

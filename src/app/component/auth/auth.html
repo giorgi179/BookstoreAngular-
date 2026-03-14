@@ -1,0 +1,88 @@
+<div class="page-wrapper">
+  <div class="container" [class.right-panel-active]="isRightPanelActive">
+
+    <!-- SIGN UP -->
+    <div class="form-container sign-up-container">
+
+      <form (ngSubmit)="onRegister()" *ngIf="!showVerify">
+        <h1>{{ 'CREATE_ACCOUNT' | translate }}</h1>
+        <span>{{ 'FILL_DETAILS' | translate }}</span>
+
+        <input type="text"     [placeholder]="'FULL_NAME' | translate" [(ngModel)]="registerData.fullName" name="fullName" required />
+        <input type="email"    placeholder="Email"                      [(ngModel)]="registerData.email"    name="email"    required />
+        <input type="text"     placeholder="Phone"                      [(ngModel)]="registerData.phone"    name="phone" />
+        <input type="password" placeholder="Password"                   [(ngModel)]="registerData.password" name="password" required />
+
+        <button type="submit">{{ 'SIGN_UP' | translate }}</button>
+
+        <p *ngIf="registerMessage"
+           [class.msg]="!registerSuccess"
+           [class.msg-success]="registerSuccess">
+          {{ registerMessage }}
+        </p>
+
+        <button type="button" class="mobile-switch-btn" (click)="activateSignIn()">
+          {{ 'ALREADY_HAVE_ACCOUNT' | translate }}
+        </button>
+      </form>
+
+      <!-- VERIFY -->
+      <form (ngSubmit)="onVerify()" *ngIf="showVerify">
+        <h1>{{ 'VERIFY_EMAIL' | translate }}</h1>
+        <span>{{ 'VERIFY_CODE_DESC' | translate }}</span>
+
+        <input type="text" placeholder="Verification Code" [(ngModel)]="verifyCode" name="verifyCode" required />
+
+        <button type="submit">{{ 'VERIFY' | translate }}</button>
+
+        <p *ngIf="verifyMessage"
+           [class.msg]="!verifySuccess"
+           [class.msg-success]="verifySuccess">
+          {{ verifyMessage }}
+        </p>
+      </form>
+
+    </div>
+
+    <!-- SIGN IN -->
+    <div class="form-container sign-in-container">
+      <form (ngSubmit)="onLogin()">
+        <h1>{{ 'SIGN_IN' | translate }}</h1>
+        <span>{{ 'USE_CREDENTIALS' | translate }}</span>
+
+        <input type="email"    placeholder="Email"    [(ngModel)]="loginData.email"    name="email"    required />
+        <input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password" required />
+
+        <a href="#">{{ 'FORGOT_PASSWORD' | translate }}</a>
+        <button type="submit">{{ 'SIGN_IN' | translate }}</button>
+
+        <p *ngIf="loginMessage"
+           [class.msg]="!loginSuccess"
+           [class.msg-success]="loginSuccess">
+          {{ loginMessage }}
+        </p>
+
+        <button type="button" class="mobile-switch-btn" (click)="activateSignUp()">
+          {{ 'DONT_HAVE_ACCOUNT' | translate }}
+        </button>
+      </form>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>{{ 'WELCOME_BACK' | translate }}</h1>
+          <p>{{ 'ALREADY_ACCOUNT' | translate }}</p>
+          <button class="ghost" type="button" (click)="activateSignIn()">{{ 'SIGN_IN' | translate }}</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>{{ 'HELLO_FRIEND' | translate }}</h1>
+          <p>{{ 'ENTER_DETAILS' | translate }}</p>
+          <button class="ghost" type="button" (click)="activateSignUp()">{{ 'SIGN_UP' | translate }}</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /home
+Allow: /bookstore
+Allow: /about
+Disallow: /basket
+Disallow: /auth
+Disallow: /profile
+Disallow: /change-password
+
+Sitemap: https://yoursite.com/sitemap.xml
