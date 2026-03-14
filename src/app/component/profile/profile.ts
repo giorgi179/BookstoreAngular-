@@ -14,8 +14,8 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class Profile implements OnInit {
 
-  private apiUser    = 'https://localhost:7023/api/User';
-  private apiPayment = 'https://localhost:7023/api/Payment';
+  private apiUser    = 'https://myapiproject-production-bece.up.railway.app/api/User';
+  private apiPayment = 'https://myapiproject-production-bece.up.railway.app/api/Payment';
 
   // ── User state ───────────────────────────────────────────────────────────────
   userId       = 0;

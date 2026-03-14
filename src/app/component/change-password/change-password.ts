@@ -22,7 +22,7 @@ export class ChangePassword {
   errorMessage = '';
   isLoading = false;
 
-  private api = 'https://localhost:7023/api/User';
+  private api = 'https://myapiproject-production-bece.up.railway.app/api/User';
 
   constructor(
     private http: HttpClient,

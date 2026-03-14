@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FooterService {
-  private api = 'https://localhost:7023/api';
+  private api = 'https://myapiproject-production-bece.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 

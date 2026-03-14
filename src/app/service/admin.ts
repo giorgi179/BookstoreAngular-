@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class Admin {
-  private api = 'https://localhost:7023/api/admin';
-  private baseApi = 'https://localhost:7023/api';
+  private api = 'https://myapiproject-production-bece.up.railway.app/api/Admin';
+  private baseApi = 'https://myapiproject-production-bece.up.railway.app/api';
 
   constructor(private http: HttpClient) {}
 

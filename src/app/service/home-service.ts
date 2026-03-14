@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class HomeService {
 
-  private api = "https://localhost:7023/api/Book/get-book-tolist";
+  private api = "https://myapiproject-production-bece.up.railway.app/api/Book/get-book-tolist";
 
   constructor(private http: HttpClient) {}
 

@@ -17,8 +17,8 @@ interface BasketItem {
   styleUrl: './card-system.scss',
 })
 export class CardSystem implements OnInit {
-  private api    = 'https://localhost:7023/api/User';
-  private payApi = 'https://localhost:7023/api/Payment';
+  private api    = 'https://myapiproject-production-bece.up.railway.app/api/User';
+  private payApi = 'https://myapiproject-production-bece.up.railway.app/api/Payment';
 
   cardData = { number: '', name: '', expiry: '', cvv: '', address: '' };
   isFlipped = false;
