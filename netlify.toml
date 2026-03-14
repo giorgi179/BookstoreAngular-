@@ -1,3 +1,8 @@
 [build]
   command = "ng build --configuration production"
   publish = "dist/StepisSualeduriProeqtiAngular/browser"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
