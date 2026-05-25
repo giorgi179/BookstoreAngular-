@@ -15,8 +15,7 @@
 
   .Menu {
     @media (width >= 1024px) {
-      .NavIcon      { display: none; }
-      .drawer-header { display: none; }
+      .NavIcon { display: none; }
     }
 
     @media (width < 1024px) {
@@ -162,7 +161,6 @@
     background: rgba(5, 18, 38, 0.55);
     backdrop-filter: blur(3px);
     z-index: 9998;
-    transition: opacity 0.35s ease;
 
     &.open { display: block; }
   }
@@ -310,20 +308,24 @@
   }
 
   // ═══════════════════════════════════════════════════
-  //  DRAWER HEADER
+  //  DRAWER HEADER — მხოლოდ მობილურზე ჩანს
   // ═══════════════════════════════════════════════════
 
   .drawer-header {
-    background: #0f2d55;
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 64px;
-    flex-shrink: 0;
-    width: 100%;
+    display: none;
 
-    .logo-box { border-color: rgba(255, 255, 255, 0.7); }
+    @media (width < 1024px) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f2d55;
+      padding: 14px 20px;
+      min-height: 64px;
+      flex-shrink: 0;
+      width: 100%;
+
+      .logo-box { border-color: rgba(255, 255, 255, 0.7); }
+    }
   }
 
   .close-menu {
