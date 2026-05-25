@@ -12,7 +12,20 @@
 
     <!-- MENU -->
     <div class="Menu inline-center-center" [class.open]="menuOpen">
-      <button class="close-menu" (click)="closeMenu()">✕</button>
+
+      <!-- Drawer Header (მობილურში ჩანს) -->
+      <div class="drawer-header">
+        <a class="Logo block-center-center" (click)="goToHome(); closeMenu()">
+          <div class="logo-box">
+            <span class="logo-bink">BINK.</span>
+            <span class="logo-divider"></span>
+            <span class="logo-publishers">PUBLISHERS</span>
+          </div>
+        </a>
+        <button class="close-menu" (click)="closeMenu()">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
 
       <div class="NavItem block-center-center">
         <a class="NavLink block-center-center" (click)="goBooksStore(); closeMenu()">
@@ -35,7 +48,6 @@
         </a>
       </div>
 
-
       <div class="NavItem block-center-center">
         <a class="NavLink block-center-center" [routerLink]="['/contact']" (click)="closeMenu()">
           <span class="NavLinkTitle">{{ 'NAV_CONTACT' | translate }}</span>
@@ -47,8 +59,10 @@
       <div class="lang-switcher-mobile">
         <p class="lang-mobile-title">{{ 'NAV_LANGUAGE' | translate }}</p>
         <div class="lang-mobile-grid">
-          <button *ngFor="let lang of languages" (click)="switchLang(lang.code); closeMenu()"
-            [class.active]="currentLang === lang.code" class="lang-mobile-btn">
+          <button *ngFor="let lang of languages"
+            (click)="switchLang(lang.code); closeMenu()"
+            [class.active]="currentLang === lang.code"
+            class="lang-mobile-btn">
             {{ lang.flag }} {{ lang.label }}
           </button>
         </div>
@@ -56,7 +70,7 @@
 
     </div>
 
-    <!-- overlay -->
+    <!-- OVERLAY -->
     <div class="menu-overlay" [class.open]="menuOpen" (click)="closeMenu()"></div>
 
     <!-- RIGHT SIDE -->
@@ -70,8 +84,10 @@
           <i class="ri-arrow-down-s-line lang-arrow" [class.rotated]="langMenuOpen"></i>
         </button>
         <div class="lang-dropdown" [class.open]="langMenuOpen">
-          <button *ngFor="let lang of languages" (click)="switchLang(lang.code); langMenuOpen = false"
-            [class.active]="currentLang === lang.code" class="lang-option">
+          <button *ngFor="let lang of languages"
+            (click)="switchLang(lang.code); langMenuOpen = false"
+            [class.active]="currentLang === lang.code"
+            class="lang-option">
             <span>{{ lang.flag }}</span>
             <span>{{ lang.label }}</span>
             <i class="ri-check-line lang-check" *ngIf="currentLang === lang.code"></i>
@@ -100,11 +116,12 @@
       </ng-container>
 
       <!-- HAMBURGER -->
-      <button class="hamburger" (click)="openMenu()">
-        <i class="ri-menu-line"></i>
+      <button class="hamburger" [class.open]="menuOpen" (click)="openMenu()" aria-label="Open menu">
+        <span class="bar bar-top"></span>
+        <span class="bar bar-mid"></span>
+        <span class="bar bar-bot"></span>
       </button>
 
     </div>
-
   </div>
 </nav>
