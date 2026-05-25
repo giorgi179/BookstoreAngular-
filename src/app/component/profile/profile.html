@@ -1,18 +1,11 @@
 <div class="profile-page">
 
-  <!-- Back -->
   <button class="back-btn" (click)="goBack()">← Back</button>
 
-  <!-- Avatar Section -->
   <div class="avatar-section">
     <div class="avatar-wrap">
-      <img
-        [src]="currentPhoto || getDefaultAvatar()"
-        alt="Profile"
-        class="avatar-img"
-        (error)="onImgError($event)"
-        (click)="openPhotoModal()"
-      />
+      <img [src]="currentPhoto || getDefaultAvatar()" alt="Profile"
+           class="avatar-img" (error)="onImgError($event)" (click)="openPhotoModal()"/>
       <label class="avatar-edit" for="photoInput">
         <i class="ri-camera-line"></i>
       </label>
@@ -27,19 +20,17 @@
     </div>
   </div>
 
-  <!-- Messages -->
   <div class="msg success" *ngIf="successMsg">{{ successMsg }}</div>
   <div class="msg error"   *ngIf="errorMsg">{{ errorMsg }}</div>
   <div class="msg loading" *ngIf="isLoading">Processing...</div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button [class.active]="activeTab==='info'"    (click)="setTab('info')">👤 Profile</button>
     <button [class.active]="activeTab==='card'"    (click)="setTab('card')">💳 My Cards</button>
     <button [class.active]="activeTab==='history'" (click)="setTab('history')">🧾 Orders</button>
   </div>
 
-  <!-- ── INFO TAB ───────────────────────────── -->
+  <!-- ── INFO TAB ── -->
   <div class="tab-content" *ngIf="activeTab==='info'">
     <div class="info-card">
       <div *ngIf="!editMode">
@@ -66,11 +57,11 @@
         <h3>Edit Profile</h3>
         <div class="form-group">
           <label>Full Name</label>
-          <input [(ngModel)]="editName" placeholder="Your full name" />
+          <input [(ngModel)]="editName" placeholder="Your full name"/>
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input [(ngModel)]="editPhone" placeholder="+995 5XX XXX XXX" />
+          <input [(ngModel)]="editPhone" placeholder="+995 5XX XXX XXX"/>
         </div>
         <div class="form-actions">
           <button class="btn-secondary" (click)="cancelEdit()">Cancel</button>
@@ -78,17 +69,53 @@
         </div>
       </div>
     </div>
+
+    <!-- ✅ Newsletter სექცია -->
+    <div class="newsletter-card">
+      <div class="newsletter-card__header">
+        <div class="newsletter-card__icon">✉</div>
+        <div>
+          <h4 class="newsletter-card__title">Newsletter</h4>
+          <p class="newsletter-card__sub">
+            Receive updates about new books, promotions and exclusive offers.
+          </p>
+        </div>
+        <span class="newsletter-badge newsletter-badge--on"  *ngIf="isSubscribed">Active</span>
+        <span class="newsletter-badge newsletter-badge--off" *ngIf="!isSubscribed">Inactive</span>
+      </div>
+
+      <p class="newsletter-card__status" *ngIf="isSubscribed">
+        You are currently receiving our newsletter emails.
+      </p>
+      <p class="newsletter-card__status newsletter-card__status--off" *ngIf="!isSubscribed">
+        You are not subscribed to our newsletter.
+      </p>
+
+      <p class="newsletter-success" *ngIf="newsletterMsg">{{ newsletterMsg }}</p>
+      <p class="newsletter-error"   *ngIf="newsletterError">{{ newsletterError }}</p>
+
+      <div class="newsletter-card__actions">
+        <button class="btn-newsletter-unsub"
+                *ngIf="isSubscribed"
+                (click)="unsubscribeNewsletter()"
+                [disabled]="newsletterLoading">
+          {{ newsletterLoading ? '...' : 'Unsubscribe' }}
+        </button>
+        <button class="btn-newsletter-sub"
+                *ngIf="!isSubscribed"
+                (click)="subscribeNewsletter()"
+                [disabled]="newsletterLoading">
+          {{ newsletterLoading ? '...' : 'Subscribe' }}
+        </button>
+      </div>
+    </div>
   </div>
 
-  <!-- ── CARD TAB ───────────────────────────── -->
+  <!-- ── CARD TAB ── -->
   <div class="tab-content" *ngIf="activeTab==='card'">
-
-    <!-- ── Card list ── -->
     <ng-container *ngIf="!showCardForm">
-
       <div class="cards-list" *ngIf="allCards.length > 0">
         <div class="card-item" *ngFor="let card of allCards">
-
           <div class="card-visual">
             <div class="card-visual__top">
               <span class="bank-name">BINK. Bank</span>
@@ -106,16 +133,14 @@
                 <span class="card-val">{{ card.expiry || '—' }}</span>
               </div>
               <div class="card-brand">
-                <i class="ri-visa-line" *ngIf="card.brand === 'visa'"></i>
-                <span class="mc"        *ngIf="card.brand === 'mastercard'">MC</span>
+                <i class="ri-visa-line"  *ngIf="card.brand === 'visa'"></i>
+                <span class="mc"         *ngIf="card.brand === 'mastercard'">MC</span>
               </div>
             </div>
           </div>
-
           <div class="card-address" *ngIf="card.address">
             <i class="ri-map-pin-line"></i> {{ card.address }}
           </div>
-
           <div class="card-actions">
             <button class="btn-secondary" (click)="openEditCardForm(card)">✏️ Edit</button>
             <button class="btn-danger"    (click)="removeCard(card)">Remove</button>
@@ -132,98 +157,54 @@
       <button class="btn-add-card" (click)="openAddCardForm()">
         <i class="ri-add-line"></i> Add New Card
       </button>
-
     </ng-container>
 
-    <!-- ── Card Form (Add / Edit) ── -->
     <div class="card-form-wrap" *ngIf="showCardForm">
       <h3>{{ editingCard ? 'Edit Card' : 'Add New Card' }}</h3>
-
       <div class="form-group" [class.has-error]="cardTouched.number && cardErrors.number">
         <label>Card Number</label>
-        <input
-          type="text"
-          [(ngModel)]="cardForm.number"
-          (input)="formatCardNumber($event)"
-          maxlength="19"
-          placeholder="1234 5678 9012 3456"
-        />
-        <span class="field-error" *ngIf="cardTouched.number && cardErrors.number">
-          {{ cardErrors.number }}
-        </span>
+        <input type="text" [(ngModel)]="cardForm.number"
+               (input)="formatCardNumber($event)" maxlength="19" placeholder="1234 5678 9012 3456"/>
+        <span class="field-error" *ngIf="cardTouched.number && cardErrors.number">{{ cardErrors.number }}</span>
       </div>
-
       <div class="form-group" [class.has-error]="cardTouched.holder && cardErrors.holder">
         <label>Card Holder Name</label>
-        <input
-          type="text"
-          [(ngModel)]="cardForm.holder"
-          (blur)="validateHolder()"
-          placeholder="FULL NAME"
-          style="text-transform:uppercase"
-        />
-        <span class="field-error" *ngIf="cardTouched.holder && cardErrors.holder">
-          {{ cardErrors.holder }}
-        </span>
+        <input type="text" [(ngModel)]="cardForm.holder" (blur)="validateHolder()"
+               placeholder="FULL NAME" style="text-transform:uppercase"/>
+        <span class="field-error" *ngIf="cardTouched.holder && cardErrors.holder">{{ cardErrors.holder }}</span>
       </div>
-
       <div class="form-row">
         <div class="form-group" [class.has-error]="cardTouched.expiry && cardErrors.expiry">
           <label>Expiry Date</label>
-          <input
-            type="text"
-            [(ngModel)]="cardForm.expiry"
-            (input)="formatExpiry($event)"
-            maxlength="5"
-            placeholder="MM/YY"
-          />
-          <span class="field-error" *ngIf="cardTouched.expiry && cardErrors.expiry">
-            {{ cardErrors.expiry }}
-          </span>
+          <input type="text" [(ngModel)]="cardForm.expiry"
+                 (input)="formatExpiry($event)" maxlength="5" placeholder="MM/YY"/>
+          <span class="field-error" *ngIf="cardTouched.expiry && cardErrors.expiry">{{ cardErrors.expiry }}</span>
         </div>
-
         <div class="form-group" [class.has-error]="cardTouched.cvv && cardErrors.cvv">
           <label>CVV</label>
-          <input
-            type="password"
-            [(ngModel)]="cardForm.cvv"
-            (input)="formatCvv($event)"
-            maxlength="3"
-            placeholder="•••"
-          />
-          <span class="field-error" *ngIf="cardTouched.cvv && cardErrors.cvv">
-            {{ cardErrors.cvv }}
-          </span>
+          <input type="password" [(ngModel)]="cardForm.cvv"
+                 (input)="formatCvv($event)" maxlength="3" placeholder="•••"/>
+          <span class="field-error" *ngIf="cardTouched.cvv && cardErrors.cvv">{{ cardErrors.cvv }}</span>
         </div>
       </div>
-
       <div class="form-group" [class.has-error]="cardTouched.address && cardErrors.address">
         <label>Exact Address</label>
-        <input
-          type="text"
-          [(ngModel)]="cardForm.address"
-          (blur)="validateAddress()"
-          placeholder="City, Street, Apt..."
-        />
-        <span class="field-error" *ngIf="cardTouched.address && cardErrors.address">
-          {{ cardErrors.address }}
-        </span>
+        <input type="text" [(ngModel)]="cardForm.address" (blur)="validateAddress()"
+               placeholder="City, Street, Apt..."/>
+        <span class="field-error" *ngIf="cardTouched.address && cardErrors.address">{{ cardErrors.address }}</span>
       </div>
-
       <div class="card-brand-preview" *ngIf="cardBrand">
         <i class="ri-visa-line" *ngIf="cardBrand === 'visa'"></i>
         <span class="mc"        *ngIf="cardBrand === 'mastercard'">MC</span>
       </div>
-
       <div class="form-actions">
         <button class="btn-secondary" (click)="closeCardForm()">Cancel</button>
         <button class="btn-primary"   (click)="saveCard()">Save Card</button>
       </div>
     </div>
-
   </div>
 
-  <!-- ── HISTORY TAB ────────────────────────── -->
+  <!-- ── HISTORY TAB ── -->
   <div class="tab-content" *ngIf="activeTab==='history'">
     <div class="history-empty" *ngIf="payments.length === 0 && !isLoading">
       <div class="history-empty__icon">🧾</div>
@@ -255,8 +236,7 @@
 <div class="photo-modal" *ngIf="photoModalOpen" (click)="closePhotoModal()">
   <div class="photo-modal__content" (click)="$event.stopPropagation()">
     <button class="photo-modal__close" (click)="closePhotoModal()">✕</button>
-    <img [src]="currentPhoto || getDefaultAvatar()"
-         class="photo-modal__img" (error)="onImgError($event)" />
+    <img [src]="currentPhoto || getDefaultAvatar()" class="photo-modal__img" (error)="onImgError($event)"/>
     <label class="photo-modal__change" for="photoInputModal">
       <i class="ri-camera-line"></i> Change Photo
     </label>

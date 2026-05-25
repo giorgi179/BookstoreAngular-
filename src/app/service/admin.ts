@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE, ADMIN_API } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class Admin {
-  private api = 'https://myapiproject-production-bece.up.railway.app/api/Admin';
-  private baseApi = 'https://myapiproject-production-bece.up.railway.app/api';
+  private api = ADMIN_API;
+  private baseApi = API_BASE;
 
   constructor(private http: HttpClient) {}
 

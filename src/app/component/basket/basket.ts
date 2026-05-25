@@ -3,6 +3,7 @@ import { BasketService } from '../../service/basket-service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SeoService } from '../../service/seo-service';
+import { PAYMENT_API, USER_API } from '../../service/api';
 
 @Component({
   selector    : 'app-basket',
@@ -24,8 +25,8 @@ export class Basket implements OnInit {
   showCardPicker  = false;
   selectedCard   : any      = null;
 
-  private apiUser    = 'https://myapiproject-production-bece.up.railway.app/api/User';
-  private apiPayment = 'https://myapiproject-production-bece.up.railway.app/api/Payment';
+  private apiUser    = USER_API;
+  private apiPayment = PAYMENT_API;
 
   constructor(
     private basketService: BasketService,

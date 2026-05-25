@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
+import { USER_API } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private api = "https://myapiproject-production-bece.up.railway.app/api/User";
+  private api = USER_API;
 
   constructor(private http: HttpClient) {}
 

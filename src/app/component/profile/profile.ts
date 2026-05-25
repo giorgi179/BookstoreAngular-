@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
+import { PAYMENT_API, USER_API } from '../../service/api';
 
 @Component({
   selector: 'app-profile',
@@ -14,30 +15,27 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class Profile implements OnInit {
 
-  private apiUser    = 'https://myapiproject-production-bece.up.railway.app/api/User';
-  private apiPayment = 'https://myapiproject-production-bece.up.railway.app/api/Payment';
+  private apiUser    = USER_API;
+  private apiPayment = PAYMENT_API;
 
-  // ── User state ───────────────────────────────────────────────────────────────
   userId       = 0;
   userEmail    = '';
   userName     = '';
   userPhone    = '';
   currentPhoto = '';
   isVerified   = false;
+  isSubscribed = false;
 
-  // ── UI state ─────────────────────────────────────────────────────────────────
   activeTab      = 'info';
   isLoading      = false;
   successMsg     = '';
   errorMsg       = '';
   photoModalOpen = false;
 
-  // ── Profile edit ──────────────────────────────────────────────────────────────
   editMode  = false;
   editName  = '';
   editPhone = '';
 
-  // ── Cards ─────────────────────────────────────────────────────────────────────
   allCards    : any[] = [];
   editingCard : any   = null;
   showCardForm        = false;
@@ -46,12 +44,14 @@ export class Profile implements OnInit {
   cardErrors  = { number: '', holder: '', expiry: '', cvv: '', address: '' };
   cardTouched = { number: false, holder: false, expiry: false, cvv: false, address: false };
 
-  // ── Payment history ───────────────────────────────────────────────────────────
   payments: any[] = [];
 
-  constructor(private http: HttpClient, private router: Router) {}
+  // Newsletter
+  newsletterLoading = false;
+  newsletterMsg     = '';
+  newsletterError   = '';
 
-  // ── Lifecycle ─────────────────────────────────────────────────────────────────
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     const id    = localStorage.getItem('userId');
@@ -63,16 +63,15 @@ export class Profile implements OnInit {
     this.loadPhoto(email);
   }
 
-  // ── Load user + merge cards ───────────────────────────────────────────────────
-
   loadUser(email: string) {
     this.http.get<any>(`${this.apiUser}/get-user?email=${email}`).subscribe({
-      next : (res) => {
-        this.userName   = res.fullName   ?? '';
-        this.userPhone  = res.phone      ?? '';
-        this.isVerified = res.isVerified ?? false;
-        this.editName   = this.userName;
-        this.editPhone  = this.userPhone;
+      next: (res) => {
+        this.userName    = res.fullName    ?? '';
+        this.userPhone   = res.phone       ?? '';
+        this.isVerified  = res.isVerified  ?? false;
+        this.isSubscribed = res.isSubscribed ?? false;
+        this.editName    = this.userName;
+        this.editPhone   = this.userPhone;
         this.mergeCards(res);
       },
       error: () => this.mergeCards(null),
@@ -85,54 +84,38 @@ export class Profile implements OnInit {
         const cards: any[] = [];
         const seen = new Set<string>();
 
-        // 1. Primary card from User API (single saved card)
         if (userRes?.savedCardMasked) {
           const last4 = userRes.savedCardMasked.slice(-4);
           seen.add(last4);
           cards.push({
-            id      : 'user-primary',
-            source  : 'user',
-            primary : true,
-            masked  : userRes.savedCardMasked,
-            holder  : userRes.savedCardHolder ?? '',
-            expiry  : userRes.savedCardExpiry ?? '',
-            address : '',
-            brand   : (userRes.savedCardBrand ?? '').toLowerCase(),
+            id: 'user-primary', source: 'user', primary: true,
+            masked: userRes.savedCardMasked, holder: userRes.savedCardHolder ?? '',
+            expiry: userRes.savedCardExpiry ?? '', address: '',
+            brand: (userRes.savedCardBrand ?? '').toLowerCase(),
           });
         }
 
-        // 2. Unique cards from Payment history
         (payments ?? []).forEach((p: any) => {
           const raw   = (p.cardNumber ?? '').replace(/\s/g, '');
           const last4 = raw.slice(-4);
           if (!last4 || seen.has(last4)) return;
           seen.add(last4);
           cards.push({
-            id      : `pay-${p.id}`,
-            source  : 'payment',
-            primary : false,
-            masked  : p.cardNumber     ?? '',
-            holder  : p.cardHolderName ?? '',
-            expiry  : p.expiryDate     ?? '',
-            address : p.exactAddress   ?? '',
-            brand   : raw.startsWith('4') ? 'visa'
-                    : raw.startsWith('5') ? 'mastercard' : '',
+            id: `pay-${p.id}`, source: 'payment', primary: false,
+            masked: p.cardNumber ?? '', holder: p.cardHolderName ?? '',
+            expiry: p.expiryDate ?? '', address: p.exactAddress ?? '',
+            brand: raw.startsWith('4') ? 'visa' : raw.startsWith('5') ? 'mastercard' : '',
           });
         });
 
         this.allCards = cards;
       },
       error: () => {
-        // fallback: only primary card
         this.allCards = userRes?.savedCardMasked ? [{
-          id      : 'user-primary',
-          source  : 'user',
-          primary : true,
-          masked  : userRes.savedCardMasked,
-          holder  : userRes.savedCardHolder ?? '',
-          expiry  : userRes.savedCardExpiry ?? '',
-          address : '',
-          brand   : (userRes.savedCardBrand ?? '').toLowerCase(),
+          id: 'user-primary', source: 'user', primary: true,
+          masked: userRes.savedCardMasked, holder: userRes.savedCardHolder ?? '',
+          expiry: userRes.savedCardExpiry ?? '', address: '',
+          brand: (userRes.savedCardBrand ?? '').toLowerCase(),
         }] : [];
       },
     });
@@ -142,6 +125,53 @@ export class Profile implements OnInit {
     this.http.get(`${this.apiUser}/get-photo?email=${email}`, { responseType: 'text' }).subscribe({
       next: (url) => { this.currentPhoto = url.replace(/^"|"$/g, ''); },
       error: ()   => { this.currentPhoto = ''; },
+    });
+  }
+
+  // ── Newsletter ────────────────────────────────────────────────────────────────
+
+  unsubscribeNewsletter() {
+    if (!confirm('Are you sure you want to unsubscribe from our newsletter?')) return;
+    this.newsletterLoading = true;
+    this.newsletterMsg     = '';
+    this.newsletterError   = '';
+
+    this.http.delete(`${this.apiUser}/unsubscribe-newsletter?email=${this.userEmail}`).subscribe({
+      next: () => {
+        this.isSubscribed      = false;
+        this.newsletterLoading = false;
+        this.newsletterMsg     = 'You have successfully unsubscribed from our newsletter.';
+        setTimeout(() => (this.newsletterMsg = ''), 4000);
+      },
+      error: (err) => {
+        this.newsletterLoading = false;
+        this.newsletterError   = err.error?.message || 'Something went wrong. Please try again.';
+        setTimeout(() => (this.newsletterError = ''), 4000);
+      },
+    });
+  }
+
+  subscribeNewsletter() {
+    this.newsletterLoading = true;
+    this.newsletterMsg     = '';
+    this.newsletterError   = '';
+
+    this.http.post(
+      `${this.apiUser}/subscribe-newsletter`,
+      JSON.stringify(this.userEmail),
+      { headers: { 'Content-Type': 'application/json' } }
+    ).subscribe({
+      next: () => {
+        this.isSubscribed      = true;
+        this.newsletterLoading = false;
+        this.newsletterMsg     = 'You have successfully subscribed to our newsletter!';
+        setTimeout(() => (this.newsletterMsg = ''), 4000);
+      },
+      error: (err) => {
+        this.newsletterLoading = false;
+        this.newsletterError   = err.error?.message || 'Something went wrong. Please try again.';
+        setTimeout(() => (this.newsletterError = ''), 4000);
+      },
     });
   }
 
@@ -200,35 +230,14 @@ export class Profile implements OnInit {
   // ── Card form ─────────────────────────────────────────────────────────────────
 
   resetCardForm(prefill?: any) {
-    this.cardForm    = {
-      number  : prefill?.masked  ?? '',
-      holder  : prefill?.holder  ?? this.userName,
-      expiry  : prefill?.expiry  ?? '',
-      cvv     : '',
-      address : prefill?.address ?? '',
-    };
+    this.cardForm    = { number: prefill?.masked ?? '', holder: prefill?.holder ?? this.userName, expiry: prefill?.expiry ?? '', cvv: '', address: prefill?.address ?? '' };
     this.cardErrors  = { number: '', holder: '', expiry: '', cvv: '', address: '' };
     this.cardTouched = { number: false, holder: false, expiry: false, cvv: false, address: false };
   }
 
-  openAddCardForm() {
-    this.editingCard  = null;
-    this.resetCardForm();
-    this.showCardForm = true;
-  }
-
-  openEditCardForm(card: any) {
-    this.editingCard  = card;
-    this.resetCardForm(card);
-    this.showCardForm = true;
-  }
-
-  closeCardForm() {
-    this.showCardForm = false;
-    this.editingCard  = null;
-  }
-
-  // ── Validation ────────────────────────────────────────────────────────────────
+  openAddCardForm()      { this.editingCard = null; this.resetCardForm(); this.showCardForm = true; }
+  openEditCardForm(c: any) { this.editingCard = c; this.resetCardForm(c); this.showCardForm = true; }
+  closeCardForm()        { this.showCardForm = false; this.editingCard = null; }
 
   formatCardNumber(e: Event) {
     const input = e.target as HTMLInputElement;
@@ -256,9 +265,7 @@ export class Profile implements OnInit {
 
   validateCardNumber() {
     const raw = this.cardForm.number.replace(/\s/g, '');
-    if (!raw)                 this.cardErrors.number = 'Card number is required';
-    else if (raw.length < 16) this.cardErrors.number = 'Must be 16 digits';
-    else                      this.cardErrors.number = '';
+    this.cardErrors.number = !raw ? 'Card number is required' : raw.length < 16 ? 'Must be 16 digits' : '';
   }
 
   validateHolder() {
@@ -272,18 +279,14 @@ export class Profile implements OnInit {
     if (!/^\d{2}\/\d{2}$/.test(v)) { this.cardErrors.expiry = 'Format: MM/YY'; return; }
     const [mm, yy] = v.split('/').map(Number);
     if (mm < 1 || mm > 12)          { this.cardErrors.expiry = 'Invalid month'; return; }
-    const now  = new Date();
-    const curY = now.getFullYear() % 100;
-    const curM = now.getMonth() + 1;
+    const now = new Date(); const curY = now.getFullYear() % 100; const curM = now.getMonth() + 1;
     if (yy < curY || (yy === curY && mm < curM)) { this.cardErrors.expiry = 'Card expired'; return; }
     this.cardErrors.expiry = '';
   }
 
   validateCvv() {
     this.cardTouched.cvv = true;
-    if (!this.cardForm.cvv)                this.cardErrors.cvv = 'CVV is required';
-    else if (this.cardForm.cvv.length < 3) this.cardErrors.cvv = 'Must be 3 digits';
-    else                                   this.cardErrors.cvv = '';
+    this.cardErrors.cvv  = !this.cardForm.cvv ? 'CVV is required' : this.cardForm.cvv.length < 3 ? 'Must be 3 digits' : '';
   }
 
   validateAddress() {
@@ -292,108 +295,62 @@ export class Profile implements OnInit {
   }
 
   get cardFormValid(): boolean {
-    return !this.cardErrors.number  && !!this.cardForm.number
-        && !this.cardErrors.holder  && !!this.cardForm.holder
-        && !this.cardErrors.expiry  && !!this.cardForm.expiry
-        && !this.cardErrors.cvv     && !!this.cardForm.cvv
+    return !this.cardErrors.number && !!this.cardForm.number
+        && !this.cardErrors.holder && !!this.cardForm.holder
+        && !this.cardErrors.expiry && !!this.cardForm.expiry
+        && !this.cardErrors.cvv    && !!this.cardForm.cvv
         && !this.cardErrors.address && !!this.cardForm.address;
   }
 
   get cardBrand(): string {
     const n = this.cardForm.number.replace(/\s/g, '');
-    if (n.startsWith('4')) return 'visa';
-    if (n.startsWith('5')) return 'mastercard';
-    return '';
+    return n.startsWith('4') ? 'visa' : n.startsWith('5') ? 'mastercard' : '';
   }
-
-  // ── Save card ─────────────────────────────────────────────────────────────────
 
   saveCard() {
     this.cardTouched = { number: true, holder: true, expiry: true, cvv: true, address: true };
-    this.validateCardNumber();
-    this.validateHolder();
-    this.validateExpiry();
-    this.validateCvv();
-    this.validateAddress();
+    this.validateCardNumber(); this.validateHolder(); this.validateExpiry(); this.validateCvv(); this.validateAddress();
     if (!this.cardFormValid) return;
-
     this.isLoading = true;
 
     if (this.editingCard?.source === 'user') {
-      // Update primary card via User API (save-card replaces)
       this.http.put(`${this.apiUser}/save-card`, {
-        userId     : this.userId,
-        cardNumber : this.cardForm.number,
-        cardHolder : this.cardForm.holder,
-        expiry     : this.cardForm.expiry,
+        userId: this.userId, cardNumber: this.cardForm.number,
+        cardHolder: this.cardForm.holder, expiry: this.cardForm.expiry,
       }).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeCardForm();
-          this.loadUser(this.userEmail);
-          this.showSuccess('Card updated!');
-        },
-        error: () => { this.isLoading = false; this.showError('Failed to update card.'); },
+        next: () => { this.isLoading = false; this.closeCardForm(); this.loadUser(this.userEmail); this.showSuccess('Card updated!'); },
+        error: ()  => { this.isLoading = false; this.showError('Failed to update card.'); },
       });
     } else {
-      // Add new card via Payment API (amount=0 → just saves the card info)
       this.http.post(`${this.apiPayment}/pay`, null, {
         params: {
-          userId         : this.userId.toString(),
-          cardNumber     : this.cardForm.number,
-          cardHolderName : this.cardForm.holder,
-          expiryDate     : this.cardForm.expiry,
-          cvv            : this.cardForm.cvv,
-          exactAddress   : this.cardForm.address,
-          amount         : '0',
+          userId: this.userId.toString(), cardNumber: this.cardForm.number,
+          cardHolderName: this.cardForm.holder, expiryDate: this.cardForm.expiry,
+          cvv: this.cardForm.cvv, exactAddress: this.cardForm.address, amount: '0',
         }
       }).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeCardForm();
-          this.loadUser(this.userEmail);
-          this.showSuccess('Card saved!');
-        },
-        error: () => { this.isLoading = false; this.showError('Failed to save card.'); },
+        next: () => { this.isLoading = false; this.closeCardForm(); this.loadUser(this.userEmail); this.showSuccess('Card saved!'); },
+        error: ()  => { this.isLoading = false; this.showError('Failed to save card.'); },
       });
     }
   }
 
-  // ── Remove card ───────────────────────────────────────────────────────────────
-
-removeCard(card: any) {
-  if (!confirm('Remove this card?')) return;
-
-  if (card.source === 'user') {
-    // Primary card — User API-დან წაშლა
-    this.http.delete(`${this.apiUser}/remove-card?userId=${this.userId}`).subscribe({
-      next: () => {
-        this.allCards = this.allCards.filter(c => c.id !== card.id);
-        this.showSuccess('Card removed.');
-      },
-      error: () => this.showError('Failed to remove card.'),
-    });
-  } else {
-    // Payment card — Payment API-დან წაშლა
-    // card.id = 'pay-123' → payment id = 123
-    const paymentId = parseInt(card.id.toString().replace('pay-', ''), 10);
-
-    if (!paymentId || isNaN(paymentId)) {
-      this.allCards = this.allCards.filter(c => c.id !== card.id);
-      return;
+  removeCard(card: any) {
+    if (!confirm('Remove this card?')) return;
+    if (card.source === 'user') {
+      this.http.delete(`${this.apiUser}/remove-card?userId=${this.userId}`).subscribe({
+        next: () => { this.allCards = this.allCards.filter(c => c.id !== card.id); this.showSuccess('Card removed.'); },
+        error: ()  => this.showError('Failed to remove card.'),
+      });
+    } else {
+      const paymentId = parseInt(card.id.toString().replace('pay-', ''), 10);
+      if (!paymentId || isNaN(paymentId)) { this.allCards = this.allCards.filter(c => c.id !== card.id); return; }
+      this.http.delete(`${this.apiPayment}/${paymentId}`).subscribe({
+        next: () => { this.allCards = this.allCards.filter(c => c.id !== card.id); this.showSuccess('Card removed.'); },
+        error: ()  => this.showError('Failed to remove card.'),
+      });
     }
-
-    this.http.delete(`${this.apiPayment}/${paymentId}`).subscribe({
-      next: () => {
-        this.allCards = this.allCards.filter(c => c.id !== card.id);
-        this.showSuccess('Card removed.');
-      },
-      error: () => this.showError('Failed to remove card.'),
-    });
   }
-}
-
-  // ── Payment history ───────────────────────────────────────────────────────────
 
   loadPayments() {
     this.isLoading = true;
@@ -406,15 +363,10 @@ removeCard(card: any) {
   deletePayment(id: number) {
     if (!confirm('Delete this payment record?')) return;
     this.http.delete(`${this.apiPayment}/${id}`).subscribe({
-      next: () => {
-        this.payments = this.payments.filter(p => p.id !== id);
-        this.showSuccess('Payment record deleted.');
-      },
-      error: () => this.showError('Failed to delete payment.'),
+      next: () => { this.payments = this.payments.filter(p => p.id !== id); this.showSuccess('Payment record deleted.'); },
+      error: ()  => this.showError('Failed to delete payment.'),
     });
   }
-
-  // ── Tabs ──────────────────────────────────────────────────────────────────────
 
   setTab(tab: string) {
     this.activeTab = tab;
@@ -423,17 +375,8 @@ removeCard(card: any) {
     if (tab === 'card')    this.loadUser(this.userEmail);
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────────
-
-  showSuccess(msg: string) {
-    this.successMsg = msg; this.errorMsg = '';
-    setTimeout(() => (this.successMsg = ''), 4000);
-  }
-
-  showError(msg: string) {
-    this.errorMsg = msg; this.successMsg = '';
-    setTimeout(() => (this.errorMsg = ''), 4000);
-  }
+  showSuccess(msg: string) { this.successMsg = msg; this.errorMsg = ''; setTimeout(() => (this.successMsg = ''), 4000); }
+  showError(msg: string)   { this.errorMsg = msg; this.successMsg = ''; setTimeout(() => (this.errorMsg = ''), 4000); }
 
   logout()             { localStorage.clear(); this.router.navigate(['/auth']); }
   goBack()             { this.router.navigate(['/home']); }

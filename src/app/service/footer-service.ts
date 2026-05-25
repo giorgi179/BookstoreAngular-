@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { USER_API } from './api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FooterService {
-  private api = 'https://myapiproject-production-bece.up.railway.app/api';
+  private api = USER_API;
 
   constructor(private http: HttpClient) {}
 

@@ -4,7 +4,7 @@ import { SeoService } from '../../service/seo-service';
   selector: 'app-about',
   standalone: false,
   templateUrl: './about.html',
-  styleUrl: './about.scss',
+  styleUrls: ['./about.scss'],
 })
 export class About {
 

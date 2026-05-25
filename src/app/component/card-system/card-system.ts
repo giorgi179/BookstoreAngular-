@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BasketService } from '../../service/basket-service';
+import { PAYMENT_API, USER_API } from '../../service/api';
 
 interface BasketItem {
   bookId: number;
@@ -14,11 +15,11 @@ interface BasketItem {
   selector: 'app-card-system',
   standalone: false,
   templateUrl: './card-system.html',
-  styleUrl: './card-system.scss',
+  styleUrls: ['./card-system.scss'],
 })
 export class CardSystem implements OnInit {
-  private api    = 'https://myapiproject-production-bece.up.railway.app/api/User';
-  private payApi = 'https://myapiproject-production-bece.up.railway.app/api/Payment';
+  private api    = USER_API;
+  private payApi = PAYMENT_API;
 
   cardData = { number: '', name: '', expiry: '', cvv: '', address: '' };
   isFlipped = false;

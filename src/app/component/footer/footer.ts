@@ -5,7 +5,7 @@ import { FooterService } from '../../service/footer-service';
   selector: 'app-footer',
   standalone: false,
   templateUrl: './footer.html',
-  styleUrl: './footer.scss',
+  styleUrls: ['./footer.scss'],
 })
 export class Footer {
   email: string = '';
@@ -16,51 +16,53 @@ export class Footer {
 
   constructor(private footerService: FooterService) {}
 
-  subscribe() {
-    this.errorMessage = '';
-    this.successMessage = '';
+ subscribe() {
+  this.errorMessage = '';
+  this.successMessage = '';
 
-    if (!this.email && !this.agreed) {
-      this.errorMessage = 'Please enter your email and agree to the newsletter.';
-      return;
-    }
-    if (!this.email) {
-      this.errorMessage = 'Please enter your email address.';
-      return;
-    }
-    if (!this.agreed) {
-      this.errorMessage = 'Please agree to the newsletter.';
-      return;
-    }
-
-    const userId = localStorage.getItem('userId');
-
-    if (!userId) {
-      this.errorMessage = 'You must be registered to subscribe to the newsletter.';
-      return;
-    }
-
-    this.isLoading = true;
-
-    this.footerService.subscribeNewsletter(this.email).subscribe({
-      next: (res) => {
-        this.successMessage = 'You have successfully subscribed to our newsletter!';
-        this.email = '';
-        this.agreed = false;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        if (err.status === 404) {
-          this.errorMessage = 'User not found. Please register first.';
-        } else if (err.status === 400) {
-          this.errorMessage = 'User not verified. Please verify your account first.';
-        } else {
-          this.errorMessage = 'Something went wrong. Please try again later.';
-        }
-        this.isLoading = false;
-      },
-    });
+  if (!this.email && !this.agreed) {
+    this.errorMessage = 'Please enter your email and agree to the newsletter.';
+    return;
   }
+  if (!this.email) {
+    this.errorMessage = 'Please enter your email address.';
+    return;
+  }
+
+  // ✅ Email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(this.email)) {
+    this.errorMessage = 'Please enter a valid email address.';
+    return;
+  }
+
+  if (!this.agreed) {
+    this.errorMessage = 'Please agree to the newsletter.';
+    return;
+  }
+
+  this.isLoading = true;
+
+  this.footerService.subscribeNewsletter(this.email).subscribe({
+    next: () => {
+      this.successMessage = 'You have successfully subscribed to our newsletter!';
+      this.email = '';
+      this.agreed = false;
+      this.isLoading = false;
+    },
+    error: (err) => {
+      if (err.status === 404) {
+        this.errorMessage = 'User not found. Please register first.';
+      } else if (err.status === 400) {
+  
+        this.errorMessage = err.error?.message || 'Bad request.';
+      } else {
+        this.errorMessage = 'Something went wrong. Please try again later.';
+      }
+      this.isLoading = false;
+    },
+  });
+}
 
   scrollTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });

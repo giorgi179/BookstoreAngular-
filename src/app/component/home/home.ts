@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
   selector: 'app-home',
   standalone: false,
   templateUrl: './home.html',
-  styleUrl: './home.scss'
+  styleUrls: ['./home.scss']
 })
 export class Home implements OnInit {
 

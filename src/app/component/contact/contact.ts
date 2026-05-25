@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { USER_API } from '../../service/api';
 
 @Component({
   selector: 'app-contact',
   standalone: false,
   templateUrl: './contact.html',
-  styleUrl: './contact.scss',
+  styleUrls: ['./contact.scss'],
 })
 export class Contact {
   formData = {
@@ -19,7 +20,7 @@ export class Contact {
   successMsg = '';
   errorMsg = '';
 
-  private api = 'https://myapiproject-production-bece.up.railway.app/api/User';
+  private api = USER_API;
 
   constructor(private http: HttpClient) {}
 

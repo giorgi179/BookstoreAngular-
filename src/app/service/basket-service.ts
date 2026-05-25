@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_BASE } from './api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BasketService {
-  private api = 'https://myapiproject-production-bece.up.railway.app/api';
+  private api = API_BASE;
 
   constructor(private http: HttpClient) {}
 

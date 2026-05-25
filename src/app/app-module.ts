@@ -24,7 +24,7 @@ import { Contact } from './component/contact/contact';
 import { AdminLogin } from './component/admin-login/admin-login';
 import { AdminPanel } from './component/admin-panel/admin-panel';
 
-// ── Interceptor ──────────────────────────────
+
 import { AuthInterceptor } from './interceptors/auth-interceptor';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -64,7 +64,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule,
   ],
   providers: [
-    // ── ეს დაამატე ──────────────────────────
+
     {
       provide  : HTTP_INTERCEPTORS,
       useClass : AuthInterceptor,

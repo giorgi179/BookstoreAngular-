@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SeoService } from '../../service/seo-service';
 import { TranslateModule } from '@ngx-translate/core';
+import { USER_API } from '../../service/api';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class ChangePassword {
   errorMessage = '';
   isLoading = false;
 
-  private api = 'https://myapiproject-production-bece.up.railway.app/api/User';
+  private api = USER_API;
 
   constructor(
     private http: HttpClient,

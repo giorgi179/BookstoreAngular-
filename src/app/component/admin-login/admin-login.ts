@@ -6,7 +6,7 @@ import { Admin } from '../../service/admin';
   selector: 'app-admin-login',
   standalone: false,
   templateUrl: './admin-login.html',
-  styleUrl: './admin-login.scss',
+  styleUrls: ['./admin-login.scss'],
 })
 export class AdminLogin {
   email = '';
