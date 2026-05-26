@@ -33,10 +33,6 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
-              },
-              {
-                "glob": "robots.txt",
                 "input": "public",
                 "output": "/"
               },
@@ -101,10 +97,6 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
-              },
-              {
-                "glob": "robots.txt",
                 "input": "public",
                 "output": "/"
               },
