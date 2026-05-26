@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════
-//  BINK. FOOTER — FULL RESPONSIVE STYLES  |  1724px → 320px
+//  GIORGI. FOOTER — FULL RESPONSIVE STYLES  |  1724px → 320px
 // ═══════════════════════════════════════════════════════════════════
 
 .footer {
@@ -21,6 +21,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
+  min-width: 0;
+
+  p, a {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
 
   p {
     margin: 0;
@@ -200,7 +206,6 @@
 //  RESPONSIVE BREAKPOINTS
 // ═══════════════════════════════════════════════════════════════════
 
-// ─── 1724px (Large Desktop) ─────────────────────────────────────────
 @media (max-width: 1724px) {
   .footer {
     padding: 4rem 5rem 1.5rem;
@@ -211,7 +216,6 @@
   }
 }
 
-// ─── 1440px ──────────────────────────────────────────────────────────
 @media (max-width: 1440px) {
   .footer {
     padding: 3.5rem 4rem 1.5rem;
@@ -226,7 +230,6 @@
   }
 }
 
-// ─── 1280px ──────────────────────────────────────────────────────────
 @media (max-width: 1280px) {
   .footer {
     padding: 3rem 3rem 1.5rem;
@@ -238,7 +241,6 @@
   }
 }
 
-// ─── 1024px (Tablet Landscape) ───────────────────────────────────────
 @media (max-width: 1024px) {
   .footer {
     padding: 3rem 2.5rem 1.5rem;
@@ -268,7 +270,6 @@
   }
 }
 
-// ─── 900px ────────────────────────────────────────────────────────────
 @media (max-width: 900px) {
   .footer {
     padding: 3rem 2rem 1.5rem;
@@ -280,7 +281,6 @@
     margin-bottom: 2rem;
   }
 
-  // Newsletter takes full width on 2-col layout
   .footer-newsletter {
     grid-column: 1 / -1;
   }
@@ -296,7 +296,6 @@
   }
 }
 
-// ─── 768px (Tablet Portrait) ─────────────────────────────────────────
 @media (max-width: 768px) {
   .footer {
     padding: 2.5rem 1.75rem 1.25rem;
@@ -337,7 +336,7 @@
 
     p {
       font-size: 0.75rem;
-      padding-right: 40px; // space for scroll-top button
+      padding-right: 40px;
     }
   }
 
@@ -348,7 +347,6 @@
   }
 }
 
-// ─── 600px ────────────────────────────────────────────────────────────
 @media (max-width: 600px) {
   .footer {
     padding: 2rem 1.5rem 1.25rem;
@@ -399,7 +397,6 @@
   }
 }
 
-// ─── 500px ────────────────────────────────────────────────────────────
 @media (max-width: 500px) {
   .footer {
     padding: 2rem 1.25rem 1rem;
@@ -424,11 +421,10 @@
   }
 
   .newsletter-row {
-    flex-direction: row; // keep side-by-side while there's space
+    flex-direction: row;
   }
 }
 
-// ─── 480px ────────────────────────────────────────────────────────────
 @media (max-width: 480px) {
   .footer {
     padding: 1.75rem 1rem 1rem;
@@ -486,14 +482,13 @@
   }
 
   .scroll-top {
-    position: static; // remove absolute, sit below text
+    position: static;
     width: 30px;
     height: 30px;
     font-size: 0.85rem;
   }
 }
 
-// ─── 375px ────────────────────────────────────────────────────────────
 @media (max-width: 375px) {
   .footer {
     padding: 1.5rem 0.875rem 1rem;
@@ -558,7 +553,6 @@
   }
 }
 
-// ─── 320px ────────────────────────────────────────────────────────────
 @media (max-width: 320px) {
   .footer {
     padding: 1.25rem 0.75rem 0.875rem;
