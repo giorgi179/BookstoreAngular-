@@ -3,69 +3,87 @@
 
     <!-- SIGN UP -->
     <div class="form-container sign-up-container">
-
       <form (ngSubmit)="onRegister()" *ngIf="!showVerify">
         <h1>{{ 'CREATE_ACCOUNT' | translate }}</h1>
         <span>{{ 'FILL_DETAILS' | translate }}</span>
-
         <input type="text"     [placeholder]="'FULL_NAME' | translate" [(ngModel)]="registerData.fullName" name="fullName" required />
         <input type="email"    placeholder="Email"                      [(ngModel)]="registerData.email"    name="email"    required />
         <input type="text"     placeholder="Phone"                      [(ngModel)]="registerData.phone"    name="phone" />
         <input type="password" placeholder="Password"                   [(ngModel)]="registerData.password" name="password" required />
-
         <button type="submit">{{ 'SIGN_UP' | translate }}</button>
-
         <p *ngIf="registerMessage"
            [class.msg]="!registerSuccess"
            [class.msg-success]="registerSuccess">
           {{ registerMessage }}
         </p>
-
         <button type="button" class="mobile-switch-btn" (click)="activateSignIn()">
           {{ 'ALREADY_HAVE_ACCOUNT' | translate }}
         </button>
       </form>
 
-      <!-- VERIFY -->
       <form (ngSubmit)="onVerify()" *ngIf="showVerify">
         <h1>{{ 'VERIFY_EMAIL' | translate }}</h1>
         <span>{{ 'VERIFY_CODE_DESC' | translate }}</span>
-
         <input type="text" placeholder="Verification Code" [(ngModel)]="verifyCode" name="verifyCode" required />
-
         <button type="submit">{{ 'VERIFY' | translate }}</button>
-
         <p *ngIf="verifyMessage"
            [class.msg]="!verifySuccess"
            [class.msg-success]="verifySuccess">
           {{ verifyMessage }}
         </p>
       </form>
-
     </div>
 
     <!-- SIGN IN -->
     <div class="form-container sign-in-container">
-      <form (ngSubmit)="onLogin()">
+
+      <!-- ჩვეულებრივი Login ფორმა -->
+      <form (ngSubmit)="onLogin()" *ngIf="forgotStep === 0">
         <h1>{{ 'SIGN_IN' | translate }}</h1>
         <span>{{ 'USE_CREDENTIALS' | translate }}</span>
-
         <input type="email"    placeholder="Email"    [(ngModel)]="loginData.email"    name="email"    required />
         <input type="password" placeholder="Password" [(ngModel)]="loginData.password" name="password" required />
-
-        <a href="#">{{ 'FORGOT_PASSWORD' | translate }}</a>
+        <a (click)="startForgotPassword()" style="cursor:pointer;">{{ 'FORGOT_PASSWORD' | translate }}</a>
         <button type="submit">{{ 'SIGN_IN' | translate }}</button>
-
         <p *ngIf="loginMessage"
            [class.msg]="!loginSuccess"
            [class.msg-success]="loginSuccess">
           {{ loginMessage }}
         </p>
-
         <button type="button" class="mobile-switch-btn" (click)="activateSignUp()">
           {{ 'DONT_HAVE_ACCOUNT' | translate }}
         </button>
       </form>
+
+      <!-- ნაბიჯი 1: Email შეყვანა -->
+      <form (ngSubmit)="onForgotPassword()" *ngIf="forgotStep === 1">
+        <h1>Reset Password</h1>
+        <span>Enter your email and we'll send you a reset code</span>
+        <input type="email" placeholder="Email" [(ngModel)]="forgotEmail" name="forgotEmail" required />
+        <button type="submit">Send Code</button>
+        <p *ngIf="forgotMessage"
+           [class.msg]="!forgotSuccess"
+           [class.msg-success]="forgotSuccess">
+          {{ forgotMessage }}
+        </p>
+        <a (click)="forgotStep = 0" style="cursor:pointer; margin-top:10px;">← Back to Sign In</a>
+      </form>
+
+      <!-- ნაბიჯი 2: კოდი + ახალი პაროლი -->
+      <form (ngSubmit)="onResetPassword()" *ngIf="forgotStep === 2">
+        <h1>New Password</h1>
+        <span>Enter the 6-digit code sent to your email</span>
+        <input type="text"     placeholder="6-digit Code"  [(ngModel)]="resetCode"        name="resetCode"     required />
+        <input type="password" placeholder="New Password"  [(ngModel)]="resetNewPassword" name="resetPassword" required />
+        <button type="submit">Reset Password</button>
+        <p *ngIf="resetMessage"
+           [class.msg]="!resetSuccess"
+           [class.msg-success]="resetSuccess">
+          {{ resetMessage }}
+        </p>
+        <a (click)="forgotStep = 1" style="cursor:pointer; margin-top:10px;">← Resend Code</a>
+      </form>
+
     </div>
 
     <!-- OVERLAY -->
