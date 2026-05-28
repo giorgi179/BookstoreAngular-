@@ -15,19 +15,19 @@ export class SeoService {
 
   // ========== HOME ==========
   setHomePage() {
-    this.setTitle('BINK. Publishers | Bestselling Books Online');
+    this.setTitle('GIORGI. Publishers | Bestselling Books Online');
     this.setMeta(
       'Discover bestselling books at BINK Publishers. Browse our curated collection of recommended books and find your next great read.',
       'books, bestsellers, recommended books, online bookstore, BINK publishers'
     );
     this.setOG(
-      'BINK. Publishers | Bestselling Books Online',
+      'GIORGI. Publishers | Bestselling Books Online',
       'Discover bestselling books at BINK Publishers.',
       `${this.baseUrl}/home`,
       'website'
     );
     this.setTwitter(
-      'BINK. Publishers | Bestselling Books Online',
+      'GIORGI. Publishers | Bestselling Books Online',
       'Discover bestselling books at BINK Publishers.'
     );
     this.setCanonical(`${this.baseUrl}/home`);
@@ -37,19 +37,19 @@ export class SeoService {
 
   // ========== BOOKSTORE ==========
   setBookstorePage() {
-    this.setTitle('Bookstore | Browse All Books - BINK. Publishers');
+    this.setTitle('Bookstore | Browse All Books - GIORGI. Publishers');
     this.setMeta(
       'Browse our full collection of books at BINK Publishers. Find bestsellers, new arrivals and recommended reads.',
       'bookstore, browse books, buy books online, BINK publishers'
     );
     this.setOG(
-      'Bookstore | Browse All Books - BINK. Publishers',
+      'Bookstore | Browse All Books - GIORGI. Publishers',
       'Browse our full collection of books at BINK Publishers.',
       `${this.baseUrl}/bookstore`,
       'website'
     );
     this.setTwitter(
-      'Bookstore | Browse All Books - BINK. Publishers',
+      'Bookstore | Browse All Books - GIORGI. Publishers',
       'Browse our full collection of books at BINK Publishers.'
     );
     this.setCanonical(`${this.baseUrl}/bookstore`);
@@ -58,19 +58,19 @@ export class SeoService {
 
   // ========== ABOUT ==========
   setAboutPage() {
-    this.setTitle('Our Story | BINK. Publishers');
+    this.setTitle('Our Story | GIORGI. Publishers');
     this.setMeta(
       'Learn about BINK Publishers and our passion for connecting readers with great books. Discover our story.',
       'about BINK publishers, our story, book publisher'
     );
     this.setOG(
-      'Our Story | BINK. Publishers',
+      'Our Story | GIORGI. Publishers',
       'Learn about BINK Publishers and our passion for connecting readers with great books.',
       `${this.baseUrl}/about`,
       'website'
     );
     this.setTwitter(
-      'Our Story | BINK. Publishers',
+      'Our Story | GIORGI. Publishers',
       'Learn about BINK Publishers and our passion for connecting readers with great books.'
     );
     this.setCanonical(`${this.baseUrl}/about`);
@@ -79,7 +79,7 @@ export class SeoService {
 
   // ========== BASKET ==========
   setBasketPage() {
-    this.setTitle('Your Basket | BINK. Publishers');
+    this.setTitle('Your Basket | GIORGI. Publishers');
     this.setMeta('View and manage your selected books in your basket.', '');
     this.setRobots('noindex, nofollow');
     this.setCanonical(`${this.baseUrl}/basket`);
@@ -87,7 +87,7 @@ export class SeoService {
 
   // ========== AUTH ==========
   setAuthPage() {
-    this.setTitle('Sign In or Register | BINK. Publishers');
+    this.setTitle('Sign In or Register | GIORGI. Publishers');
     this.setMeta('Sign in or create your BINK Publishers account to start shopping.', '');
     this.setRobots('noindex, nofollow');
     this.setCanonical(`${this.baseUrl}/auth`);
@@ -95,7 +95,7 @@ export class SeoService {
 
   // ========== PROFILE ==========
   setProfilePage() {
-    this.setTitle('My Profile | BINK. Publishers');
+    this.setTitle('My Profile | GIORGI. Publishers');
     this.setMeta('Manage your BINK Publishers profile and order history.', '');
     this.setRobots('noindex, nofollow');
     this.setCanonical(`${this.baseUrl}/profile`);
@@ -103,7 +103,7 @@ export class SeoService {
 
   // ========== CHANGE PASSWORD ==========
   setChangePasswordPage() {
-    this.setTitle('Change Password | BINK. Publishers');
+    this.setTitle('Change Password | GIORGI. Publishers');
     this.setMeta('Update your BINK Publishers account password securely.', '');
     this.setRobots('noindex, nofollow');
     this.setCanonical(`${this.baseUrl}/change-password`);
@@ -122,7 +122,7 @@ export class SeoService {
       },
       publisher: {
         '@type': 'Organization',
-        name: book.bookDetails?.publisher || 'BINK. Publishers'
+        name: book.bookDetails?.publisher || 'GIORGI. Publishers'
       },
       isbn: book.isbn || '',
       numberOfPages: book.bookDetails?.pageCount || '',
@@ -138,7 +138,7 @@ export class SeoService {
           : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
-          name: 'BINK. Publishers'
+          name: 'GIORGI. Publishers'
         }
       }
     });
@@ -161,7 +161,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: description });
     this.meta.updateTag({ property: 'og:url', content: url });
     this.meta.updateTag({ property: 'og:type', content: type });
-    this.meta.updateTag({ property: 'og:site_name', content: 'BINK. Publishers' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'GIORGI. Publishers' });
     this.meta.updateTag({ property: 'og:locale', content: 'en_US' });
   }
 
@@ -200,7 +200,7 @@ export class SeoService {
     this.setStructuredData({
       '@context': 'https://schema.org',
       '@type': 'BookStore',
-      name: 'BINK. Publishers',
+      name: 'GIORGI. Publishers',
       url: this.baseUrl,
       description: 'Online bookstore with curated bestsellers and recommended reads.'
     });
