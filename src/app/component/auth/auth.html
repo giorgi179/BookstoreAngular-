@@ -24,8 +24,18 @@
       <form (ngSubmit)="onVerify()" *ngIf="showVerify">
         <h1>{{ 'VERIFY_EMAIL' | translate }}</h1>
         <span>{{ 'VERIFY_CODE_DESC' | translate }}</span>
-        <input type="text" placeholder="Verification Code" [(ngModel)]="verifyCode" name="verifyCode" required />
-        <button type="submit">{{ 'VERIFY' | translate }}</button>
+        <input 
+          type="text" 
+          placeholder="000000" 
+          [(ngModel)]="verifyCode" 
+          name="verifyCode" 
+          maxlength="6"
+          inputmode="numeric"
+          [disabled]="isVerifying"
+          required />
+        <button type="submit" [disabled]="isVerifying">
+          {{ isVerifying ? ('SENDING' | translate) : ('VERIFY' | translate) }}
+        </button>
         <p *ngIf="verifyMessage"
            [class.msg]="!verifySuccess"
            [class.msg-success]="verifySuccess">

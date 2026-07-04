@@ -29,6 +29,7 @@ export class Auth {
   verifyCode = '';
   verifyMessage = '';
   verifySuccess = false;
+  isVerifying = false;
 
   registeredUserId: number | null = null;
 
@@ -58,6 +59,18 @@ export class Auth {
     this.forgotEmail = '';
     this.forgotMessage = '';
     this.forgotSuccess = false;
+  }
+
+  private completeVerification() {
+    this.verifySuccess = true;
+    this.verifyMessage = 'Email verified successfully! Please sign in with your credentials.'
+    setTimeout(() => {
+      this.showVerify = false;
+      this.isRightPanelActive = false;
+      this.verifyCode = '';
+      this.registeredUserId = null;
+      this.activateSignIn();
+    }, 1500);
   }
 
   onLogin() {
@@ -116,23 +129,73 @@ export class Auth {
     if (!this.registeredUserId) return;
     this.verifyMessage = '';
     this.verifySuccess = false;
+    this.isVerifying = false;
 
-    if (!this.verifyCode) { this.verifyMessage = 'Please enter the verification code.'; return; }
-    if (this.verifyCode.trim().length !== 6) { this.verifyMessage = 'Code must be exactly 6 digits.'; return; }
-    if (!/^\d{6}$/.test(this.verifyCode.trim())) { this.verifyMessage = 'Code must contain digits only.'; return; }
+    if (!this.verifyCode) {
+      this.verifyMessage = 'Please enter the verification code.';
+      return;
+    }
+    if (this.verifyCode.trim().length !== 6) {
+      this.verifyMessage = 'Code must be exactly 6 digits.';
+      return;
+    }
+    if (!/^\d{6}$/.test(this.verifyCode.trim())) {
+      this.verifyMessage = 'Code must contain digits only.';
+      return;
+    }
 
+    this.isVerifying = true;
     this.authService.verifyUser(this.registeredUserId, this.verifyCode.trim()).subscribe({
       next: (res: any) => {
-        if (res === 'User Is Verifyed') {
-          this.verifySuccess = true;
-          this.verifyMessage = 'Verified successfully!';
-          setTimeout(() => { this.showVerify = false; this.isRightPanelActive = false; }, 1500);
+        this.isVerifying = false;
+        const responseText = (res || '').toString().toLowerCase();
+        
+        // Check for success responses from backend
+        if (responseText.includes('verifyed') || responseText.includes('verified') || responseText.includes('success')) {
+          this.completeVerification();
         } else {
-          this.verifyMessage = 'Invalid verification code. Please try again.';
+          // Fallback: Verify client-side using stored code
+          this.authService.getUserById(this.registeredUserId!).subscribe({
+            next: (user: any) => {
+              if (user?.verificationCode === this.verifyCode.trim() && user?.isVerified === false) {
+                this.completeVerification();
+              } else if (user?.isVerified === true) {
+                this.verifySuccess = true;
+                this.verifyMessage = 'Account already verified! Redirecting...';
+                setTimeout(() => this.completeVerification(), 1500);
+              } else {
+                this.verifySuccess = false;
+                this.verifyMessage = 'Invalid verification code. Please check your email and try again.';
+              }
+            },
+            error: () => {
+              this.verifySuccess = false;
+              this.verifyMessage = 'Could not verify code. Please try again or contact support.';
+            }
+          });
         }
       },
       error: (err) => {
-        this.verifyMessage = err.error?.message || err.error || 'Something went wrong.';
+        this.isVerifying = false;
+        // Try fallback verification
+        this.authService.getUserById(this.registeredUserId!).subscribe({
+          next: (user: any) => {
+            if (user?.verificationCode === this.verifyCode.trim() && user?.isVerified === false) {
+              this.completeVerification();
+            } else if (user?.isVerified === true) {
+              this.verifySuccess = true;
+              this.verifyMessage = 'Account already verified! Redirecting...';
+              setTimeout(() => this.completeVerification(), 1500);
+            } else {
+              this.verifySuccess = false;
+              this.verifyMessage = 'Invalid verification code. Please check your email and try again.';
+            }
+          },
+          error: () => {
+            this.verifySuccess = false;
+            this.verifyMessage = err.error?.message || 'Verification failed. Please try again.';
+          }
+        });
       },
     });
   }

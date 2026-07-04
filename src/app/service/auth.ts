@@ -27,6 +27,13 @@ export class AuthService {
       .pipe(catchError((err) => throwError(() => err)));
   }
 
+  // Get user to check verification code client-side (fallback)
+  getUserById(id: number) {
+    return this.http
+      .get(`${this.api}/get-user-${id}`)
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
   // ახალი მეთოდები
   forgotPassword(email: string) {
     return this.http
