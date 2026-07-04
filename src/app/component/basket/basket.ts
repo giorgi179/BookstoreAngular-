@@ -83,13 +83,25 @@ export class Basket implements OnInit {
       return;
     }
     item.quantity++;
-    this.basketService.updateBasketItem(item.basketId, item.bookId, item.quantity).subscribe();
+    this.basketService.updateBasketItem(item.basketId, item.bookId, item.quantity).subscribe({
+      error: () => {
+        item.quantity--;
+        this.errorMessage = 'Failed to update quantity.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+      },
+    });
   }
 
   decreaseQuantity(item: any) {
     if (item.quantity <= 1) return;
     item.quantity--;
-    this.basketService.updateBasketItem(item.basketId, item.bookId, item.quantity).subscribe();
+    this.basketService.updateBasketItem(item.basketId, item.bookId, item.quantity).subscribe({
+      error: () => {
+        item.quantity++;
+        this.errorMessage = 'Failed to update quantity.';
+        setTimeout(() => (this.errorMessage = ''), 3000);
+      },
+    });
   }
 
   removeItem(item: any) {
